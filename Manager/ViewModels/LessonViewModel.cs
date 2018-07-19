@@ -3,6 +3,7 @@ using Manager.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace Manager.ViewModels
 {
@@ -14,14 +15,27 @@ namespace Manager.ViewModels
         private string _partner;
         private int _number;
         private DateTime _date;
-        private bool _isMain;
+        private bool _isMain = true;
         private LessonTypes _lessonType;
+        private List<string> _allPupils;
 
-        public LessonViewModel(Lesson model = null) : base(model)
-        {
-        }
 
         #endregion
+
+        public LessonViewModel()
+            :this(null)
+        {
+            
+        }
+        
+        public LessonViewModel(Lesson model = null) : base(model)
+        {
+            AllPupils = Store.Store.Instance.FindAll().Select(x => x.Name).ToList();
+            
+            if (Date == default(DateTime))
+                Date = DateTime.Today;
+            
+        }
 
         #region Properties
 
@@ -32,7 +46,13 @@ namespace Manager.ViewModels
         public bool IsMain { get => _isMain; set => SetProperty(ref _isMain, value); }
         public LessonTypes LessonType { get => _lessonType; set => SetProperty(ref _lessonType, value); }
 
-        public List<int> AllLessons { get; } = Enumerable.Range(1, 53).ToList();
+        public List<string> AllPupils
+        {
+            get => _allPupils;
+            set => SetProperty(ref _allPupils ,value);
+        }
+
+        public static List<int> AllLessons { get; } = Enumerable.Range(1, 53).ToList();
 
         #endregion
 

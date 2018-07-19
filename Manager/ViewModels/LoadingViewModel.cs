@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -17,33 +18,120 @@ namespace Manager.ViewModels
     {
         #region Fields
         private string _filePath;
-        private EncryptionType _encrType;
         private bool _loadFromFile;
+        private SecureString _password;
+        private bool _useBase64;
+        private bool _noEncr;
 
         #endregion
 
         #region Properties
+
+        public SecureString Password
+        {
+            get => _password;
+            set => SetProperty(ref _password, value);
+        }
+
         public string FilePath { get => _filePath; set => SetProperty(ref _filePath, value); }
-        public EncryptionType EncrType { get => _encrType; set => SetProperty(ref _encrType, value); }
+        private EncryptionType EncrType { get; set; }
+
+        public bool NoEncr
+        {
+            get => _noEncr;
+            set => SetProperty(ref _noEncr ,value);
+        }
+
+        public bool UseBase64
+        {
+            get => EncrType.HasFlag(EncryptionType.Base64);
+            set
+            {
+                if (value == UseBase64)
+                    return;
+                
+                if (value)
+                    EncrType ^= EncryptionType.Base64;
+                else
+                {
+                    EncrType &= ~EncryptionType.Base64;
+                }
+                
+                OnPropertyChanged();
+            }
+        }
+
+        public bool UsePassword
+        {
+            get => EncrType.HasFlag(EncryptionType.Password);
+            set
+            {
+                if (value == UsePassword)
+                    return;
+                
+                if (value)
+                    EncrType ^= EncryptionType.Password;
+                else
+                {
+                    EncrType &= ~EncryptionType.Password;
+                }
+                
+                OnPropertyChanged();
+            }
+        }
+        
+        public bool UseForMachine
+        {
+            get => EncrType.HasFlag(EncryptionType.ForMachine);
+            set
+            {
+                if (value == UseForMachine)
+                    return;
+                
+                if (value)
+                    EncrType ^= EncryptionType.ForMachine;
+                else
+                {
+                    EncrType &= ~EncryptionType.ForMachine;
+                }
+                
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
         #region Command
 
-        public ICommand OpenFile { get; set; }
-
         public bool IsLoadFromFile { get => _loadFromFile; set => SetProperty(ref _loadFromFile, value); }
 
-        public ICommand LoadCommand { get; set; }
-        public ICommand SaveCommand { get; set; }
+        public ICommand SelectFilePathCommand { get; set; }
+        public ICommand ActionCommand { get; set; }
 
         #endregion
 
         #region Command handlers
 
+        private void OnActionCommand()
+        {
+            if (IsLoadFromFile)
+                 OnLoadCommand();
+            else
+                OnSaveCommand();
+        }
+
+        private bool OnCanActionCommand()
+        {
+            return IsLoadFromFile
+                ? File.Exists(FilePath)
+                : !string.IsNullOrWhiteSpace(FilePath);
+
+        }
+
         private void OnOpenFile()
         {
             FileDialog dlg;
+            
             if (IsLoadFromFile)
                 dlg = new OpenFileDialog();
             else
@@ -119,18 +207,24 @@ namespace Manager.ViewModels
 
         #endregion
 
-        public LoadingViewModel(bool loadFromFile)
+        public LoadingViewModel()
+             :this(true)
         {
-            IsLoadFromFile = loadFromFile;
-            LoadCommand = new DelegateCommand(OnLoadCommand, () => File.Exists(FilePath));
-            SaveCommand = new DelegateCommand(OnSaveCommand, () => !string.IsNullOrWhiteSpace(FilePath));
+            
+        }
+        
+        public LoadingViewModel(bool isLoadFromFile)
+        {
+            IsLoadFromFile = isLoadFromFile;
+            
+            SelectFilePathCommand = new DelegateCommand(OnOpenFile);
+            ActionCommand = new DelegateCommand(OnActionCommand, OnCanActionCommand);
         }
     }
 
     [Flags]
     public enum EncryptionType
     {
-        None = 0,
         Base64 = 1,
         Password = 2,
         ForMachine = 4,
