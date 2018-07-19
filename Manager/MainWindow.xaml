@@ -11,18 +11,19 @@
         Title="MainWindow" Height="400" Width="320"
         Background="{DynamicResource PrimaryHueDarkBrush}">
     
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels:LessonViewModel}">
+            <views:EditLessonView/>
+        </DataTemplate>
+    </Window.Resources>
+    
     <Grid>
-        <materialDesign:DialogHost IsOpen="True">
-            <materialDesign:DialogHost.DialogContent>
-                <views:EditLessonView>
-                    <views:EditLessonView.DataContext>
-                        <viewModels:LessonViewModel/>
-                    </views:EditLessonView.DataContext>
-                </views:EditLessonView>
-                    
-            </materialDesign:DialogHost.DialogContent>
+        <materialDesign:DialogHost Identifier="Main">
             
             <views:LoadView/>
-        </materialDesign:DialogHost>
+            
+            </materialDesign:DialogHost>
+            
+        
     </Grid>
 </Window>

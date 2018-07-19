@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Manager.Views"
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="200"
@@ -96,9 +97,8 @@
                         IsDefault="True"
                         HorizontalAlignment="Right"
                         Command="materialDesign:DialogHost.CloseDialogCommand"
-                        CommandParameter="True"/>
+                        CommandParameter="{StaticResource TrueParameter}"/>
             </Grid>
-            
         </DockPanel>
         </Border >
 </UserControl>
