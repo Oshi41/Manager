@@ -17,8 +17,11 @@ namespace Manager.Model
                 || pupil.Lessons.Count != Lessons.Count)
                 return false;
 
-            var exclude = Lessons.Except(pupil.Lessons);
-            return !exclude.Any();
+            
+            var equals = !Lessons.Except(pupil.Lessons).Any()
+                         && !pupil.Lessons.Except(Lessons).Any();
+
+            return equals;
         }
 
         public override int GetHashCode()

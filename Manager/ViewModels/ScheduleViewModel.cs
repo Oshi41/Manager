@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 
 namespace Manager.ViewModels
@@ -89,15 +91,30 @@ namespace Manager.ViewModels
 
             var list = new List<WeekItem>();
 
+            middle = Store.Helper.GetMonday(middle);
+            
+            var dates = new List<DateTime>();
+            for (int i = 0; i < WeeksCount / 2; i++)
+            {
+                dates.Add(middle.AddDays(7 * i));
+                dates.Add(middle.AddDays(7 * -i));
+            }
+            
+            dates.Sort();
+
             foreach (var pupil in Pupils)
             {
-                var time = middle.AddDays(-7 * (WeeksCount / 2));
-
-                for (int i = 0; i < WeeksCount; i++)
+                foreach (var date in dates)
                 {
-                    list.Add(new WeekItem(pupil, time));
-                    time.AddDays(7);
+                    list.Add(new WeekItem(pupil, date));
                 }
+//                var time = middle.AddDays(-7 * (WeeksCount / 2));
+//
+//                for (int i = 0; i < WeeksCount; i++)
+//                {
+//                    list.Add(new WeekItem(pupil, time));
+//                    time.AddDays(7);
+//                }
             }
 
             Items = new ObservableCollection<WeekItem>(list);
@@ -127,12 +144,17 @@ namespace Manager.ViewModels
 
         #endregion
 
+
         public WeekItem(PupilViewModel pupil, DateTime date)
         {
             Date = date;
-            Pupil = pupil;
+            Pupil = new PupilViewModel(pupil.ToModel());
             Lesson = pupil.Lessons.FirstOrDefault(x => Store.Helper.TheSameWeek(date, x.Date));
             HasValue = Lesson != null;
+
+            // Костыль для команд в расписании.
+            // Ссылаемся на команды PupilViewModel
+            Pupil.SelectedLesson = Lesson;
         }
     }
 }

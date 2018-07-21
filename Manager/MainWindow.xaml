@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:viewModels="clr-namespace:Manager.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="320"
+        Title="MainWindow" Height="400" Width="600"
         Background="{DynamicResource PrimaryHueDarkBrush}">
     
     <Window.Resources>
@@ -20,7 +20,12 @@
     <Grid>
         <materialDesign:DialogHost Identifier="Main">
             
-            <views:LoadView/>
+            <materialDesign:DialogHost.DialogContent>
+                <views:EditPupilView Loaded="FrameworkElement_OnLoaded"/>
+            </materialDesign:DialogHost.DialogContent>
+            
+            <views:ScheduleView x:Name="ScheduleView"
+                                Loaded="ScheduleView_OnLoaded"/>
             
             </materialDesign:DialogHost>
             

@@ -44,6 +44,10 @@
       <HintPath>..\packages\MaterialDesignThemes.2.4.0.1044\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Mvvm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Mvvm.1.0.4\lib\Mvvm.dll</HintPath>
     </Reference>
@@ -52,6 +56,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -77,6 +85,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Control\UniformGridPanel.cs"/>
     <Compile Include="Parsable\Lesson.cs" />
     <Compile Include="Parsable\LessonTypes.cs" />
     <Compile Include="Parsable\Pupil.cs" />
@@ -87,13 +96,19 @@
     <Compile Include="ViewModels\PupilViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
     <Compile Include="Views\AddPupilView.xaml.cs">
-      <DependentUpon>AddPupilView.xaml</DependentUpon>
+      <DependentUpon>EditPupilView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditLessonView.xaml.cs">
       <DependentUpon>EditLessonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoadView.xaml.cs">
       <DependentUpon>LoadView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ScheduleView.xaml.cs">
+      <DependentUpon>ScheduleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WeekItemView.xaml.cs">
+      <DependentUpon>WeekItemView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -107,9 +122,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\AddPupilView.xaml" />
+    <Page Include="Views\EditPupilView.xaml"/>
     <Page Include="Views\EditLessonView.xaml" />
     <Page Include="Views\LoadView.xaml" />
+    <Page Include="Views\ScheduleView.xaml"/>
+    <Page Include="Views\WeekItemView.xaml"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

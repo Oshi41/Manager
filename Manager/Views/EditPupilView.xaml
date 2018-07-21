@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="Manager.Views.EditPupilView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Manager.Views"
+             xmlns:viewModels="clr-namespace:Manager.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d"
+             d:DesignHeight="50"
+             d:DesignWidth="150"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:PupilViewModel}}">
+
+    <DockPanel>
+        <TextBox Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="20"
+                 DockPanel.Dock="Top"
+                 materialDesign:HintAssist.Hint="Введите имя ученика"
+                 materialDesign:HintAssist.IsFloating="True" />
+
+        <DataGrid DockPanel.Dock="Top"
+                  ItemsSource="{Binding Lessons}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectedItem="{Binding SelectedLesson}"
+                  SelectionUnit="FullRow"
+                  SelectionMode="Single">
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding Path=AddEditLessonCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <DataGrid.CellStyle>
+                <Style TargetType="{x:Type DataGridCell}"
+                       BasedOn="{StaticResource {x:Type DataGridCell}}">
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                </Style>
+            </DataGrid.CellStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="Номер навыка"
+                                    Binding="{Binding Path=Number}" />
+
+                <DataGridTextColumn Header="Дата выступления"
+                                    Binding="{Binding Path=Date, StringFormat={}{0:dd.MMMM.yyyy}}" />
+
+                <DataGridTextColumn Header="Задание"
+                                    Binding="{Binding Path=LessonType}" />
+
+                <DataGridCheckBoxColumn Header="Главная роль"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Path=IsMain}" />
+
+                <DataGridTextColumn Header="Партнер"
+                                    Binding="{Binding Path=Partner}" />
+
+            </DataGrid.Columns>
+
+            <DataGrid.Style>
+                <Style TargetType="{x:Type DataGrid}"
+                       BasedOn="{StaticResource {x:Type DataGrid}}">
+                    <Setter Property="Visibility"
+                            Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Lessons.Count}"
+                                     Value="0">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Style>
+
+        </DataGrid>
+
+        <Button Content="Готово"
+                VerticalAlignment="Center"
+                Margin="10"
+                Command="materialDesign:DialogHost.CloseDialogCommand" 
+                CommandParameter="{StaticResource TrueParameter}"/>
+
+    </DockPanel>
+
+
+</UserControl>

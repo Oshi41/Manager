@@ -26,6 +26,8 @@ namespace Manager.ViewModels.Base
                 return;
 
             _isRefreshing = true;
+            
+            RefreshOverride(model);
 
             _isRefreshing = false;
         }
@@ -38,7 +40,8 @@ namespace Manager.ViewModels.Base
         {
             var result = base.SetProperty(ref storage, value, propertyName);
 
-            hasChanged = result;
+            if (!_isRefreshing)
+                hasChanged = result;
 
             return result;
         }

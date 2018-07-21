@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using MaterialDesignThemes.Wpf;
 
 namespace Manager.ViewModels
 {
@@ -47,11 +48,11 @@ namespace Manager.ViewModels
             Store.Store.Instance.RemoveLesson(SelectedLesson.ToModel());
         }
 
-        private void OnAddEditLesson(DateTime monday)
+        private void OnAddEditLesson(DateTime? monday)
         {
-            if (SelectedLesson == null)
+            if (SelectedLesson == null && monday.HasValue)
             {
-                AddLesson(monday);
+                AddLesson(monday.Value);
             }
             else
             {
@@ -59,19 +60,21 @@ namespace Manager.ViewModels
             }
         }
 
-        private void EditLesson()
+        private async void EditLesson()
         {
             var old = SelectedLesson.ToModel();
 
-            // todo Show Dialog
-            if (false)
+            var newViewModel = new LessonViewModel(old);
+            
+            var result = await DialogHost.Show(newViewModel, "LessonHost");
+            
+            if (!true.Equals(result))
                 return;
 
-
-            Store.Store.Instance.Replace(old, SelectedLesson.ToModel());
+            Store.Store.Instance.Replace(old, newViewModel.ToModel());
         }
 
-        private void AddLesson(DateTime monday)
+        private async void AddLesson(DateTime monday)
         {
             var model = new Lesson
             {
@@ -81,8 +84,9 @@ namespace Manager.ViewModels
 
             var vm = new LessonViewModel(model);
 
-            // todo Show Dialog
-            if (false)
+            var result = await DialogHost.Show(vm, "LessonHost");
+            
+            if (!true.Equals(result))
                 return;
 
             Store.Store.Instance.AddLesson(vm.ToModel());
@@ -94,8 +98,19 @@ namespace Manager.ViewModels
             Store.Store.Instance.RemovePupil(benchMark.Name);
         }
 
-        private void OnChangePupil()
+        private async void OnChangePupil()
         {
+            var old = ToModel();
+            
+            var vm = new PupilViewModel(old);
+            
+            var result = await DialogHost.Show(vm, "PupilHost");
+            
+            if (!true.Equals(result) 
+                || !vm.hasChanged  
+                || Equals(old, vm.ToModel()))
+                return;
+            
             Store.Store.Instance.ReplacePupil(benchMark.Name, ToModel());
         }
 
@@ -124,9 +139,9 @@ namespace Manager.ViewModels
             Store.Store.Instance.StoreChanged += OnStoreChanged;
 
             RemoveLessonCommand = new DelegateCommand(OnRemoveLesson, () => SelectedLesson != null);
-            AddEditLessonCommand = new DelegateCommand<DateTime>(OnAddEditLesson);
+            AddEditLessonCommand = new DelegateCommand<DateTime?>(OnAddEditLesson);
             DeletePupilCommand = new DelegateCommand(OnDeletePupil);
-            ChangePupilCommand = new DelegateCommand(OnChangePupil, () => hasChanged);
+            ChangePupilCommand = new DelegateCommand(OnChangePupil);
             RefreshCommand = new DelegateCommand(() => OnStoreChanged(null, EventArgs.Empty));
         }
 
