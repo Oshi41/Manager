@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:Manager.Converters"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="320"
@@ -14,6 +15,7 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
     </UserControl.Resources>
 
     <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth2"
@@ -49,7 +51,7 @@
                                 <Grid VerticalAlignment="Stretch"
                                       HorizontalAlignment="Stretch">
 
-                                    <TextBlock Text="{Binding Lesson.Number}"
+                                    <TextBlock Text="{Binding Lesson.Number, TargetNullValue=-}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
                                                FontSize="20" />

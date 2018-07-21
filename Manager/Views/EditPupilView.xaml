@@ -7,22 +7,56 @@
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:Manager.Converters"
              mc:Ignorable="d"
              d:DesignHeight="50"
              d:DesignWidth="150"
-             d:DataContext="{d:DesignInstance {x:Type viewModels:PupilViewModel}}">
+             d:DataContext="{d:DesignInstance {x:Type viewModels:PupilViewModel}}"
+             MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight}"
+             MinHeight="210">
+    
+    <UserControl.Resources>
+        <converters:DescriptionConverter x:Key="DescriptionConverter"/> 
 
-    <DockPanel>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Escape"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+    </UserControl.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <TextBox Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}"
                  Margin="20"
                  DockPanel.Dock="Top"
                  materialDesign:HintAssist.Hint="Введите имя ученика"
                  materialDesign:HintAssist.IsFloating="True" />
+        
+        <Button HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Width="16"
+                Height="16"
+                Margin="10"
+                Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+            <Viewbox>
+                <materialDesign:PackIcon Kind="Close"/>
+            </Viewbox>
+        </Button>
 
         <DataGrid DockPanel.Dock="Top"
+                  Grid.Row="1"
                   ItemsSource="{Binding Lessons}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
+                  VerticalScrollBarVisibility="Hidden"
+                  HorizontalScrollBarVisibility="Hidden"
                   SelectedItem="{Binding SelectedLesson}"
                   SelectionUnit="FullRow"
                   SelectionMode="Single">
@@ -44,13 +78,13 @@
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="Номер навыка"
-                                    Binding="{Binding Path=Number}" />
+                                    Binding="{Binding Path=Number, TargetNullValue=-}"/>
 
                 <DataGridTextColumn Header="Дата выступления"
                                     Binding="{Binding Path=Date, StringFormat={}{0:dd.MMMM.yyyy}}" />
 
                 <DataGridTextColumn Header="Задание"
-                                    Binding="{Binding Path=LessonType}" />
+                                    Binding="{Binding Path=LessonType, Converter={StaticResource DescriptionConverter}}" />
 
                 <DataGridCheckBoxColumn Header="Главная роль"
                                         IsReadOnly="True"
@@ -78,13 +112,25 @@
 
         </DataGrid>
 
-        <Button Content="Готово"
-                VerticalAlignment="Center"
-                Margin="10"
-                Command="materialDesign:DialogHost.CloseDialogCommand" 
-                CommandParameter="{StaticResource TrueParameter}"/>
+        <DockPanel Grid.Row="2">
+            
+            <!-- <Button Content="Отмена" -->
+            <!--         DockPanel.Dock="Left" -->
+            <!--         HorizontalAlignment="Left" -->
+            <!--         Style="{StaticResource MaterialDesignFlatButton}" -->
+            <!--         Margin="10" -->
+            <!--         Command="materialDesign:DialogHost.CloseDialogCommand"/> -->
 
-    </DockPanel>
+
+            <Button Content="Готово"
+                    Margin="10"
+                    Command="materialDesign:DialogHost.CloseDialogCommand"
+                    CommandParameter="{StaticResource TrueParameter}" />
+
+        </DockPanel>
+
+
+    </Grid>
 
 
 </UserControl>

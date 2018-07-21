@@ -8,7 +8,7 @@ namespace Manager.Model
         public string Partner { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
-        public bool IsMain { get; set; }
+        public bool IsMain { get; set; } = true;
         public LessonTypes LessonType { get; set; }
 
         public bool IsVilid()

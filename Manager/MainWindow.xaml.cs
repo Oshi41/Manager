@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using Manager.Model;
 using Manager.ViewModels;
@@ -18,32 +19,87 @@ namespace Manager
 
         private void ScheduleView_OnLoaded(object sender, RoutedEventArgs e)
         {
-
-            for (int i = 0; i < 10; i++)
+            var me = new Pupil
             {
-                var lesson = new Lesson
+                Name = "Arkady",
+                Lessons = new List<Lesson>
                 {
-                    Date = DateTime.Today.AddDays(-i * 7),
-                    IsMain = i % 2 == 0,
-                    LessonType = (LessonTypes) (i % 4),
-                    Number = i * 2,
-                    Name = "Name " + i,
-                };
-                
-                var pupil = new Pupil
+                    new Lesson
+                    {
+                      Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 1,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = true,
+                        Number = 50,
+                        LessonType = LessonTypes.Study,
+                        Name = "Arkady",
+                        Partner = "Balor"
+                    }
+                }
+            };
+            
+            var balor = new Pupil
+            {
+                Name = "Balor",
+                Lessons = new List<Lesson>
                 {
-                    Name = "Name " + i,
-                };
-                
-                pupil.Lessons.Add(lesson);
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(7),
+                        IsMain = true,
+                        Number = 12,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Balor"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = false,
+                        LessonType = LessonTypes.Study,
+                        Name = "Balor",
+                        Partner = "Arkady"
+                    }
+                }
+            };
+            
+            Store.Store.Instance.Load(me);
+            Store.Store.Instance.Load(balor);
 
-                lesson.Number /= 2;
-                lesson.Partner = "Another name";
-                
-                pupil.Lessons.Add(lesson);
-                
-                Store.Store.Instance.Load(pupil);
-            }
+//            for (int i = 0; i < 10; i++)
+//            {
+//                var lesson = new Lesson
+//                {
+//                    Date = DateTime.Today,
+//                    IsMain = i % 2 == 0,
+//                    LessonType = (LessonTypes) (i % 4),
+//                    Number = i * 2,
+//                    Name = "Name " + i,
+//                };
+//                
+//                var pupil = new Pupil
+//                {
+//                    Name = "Name " + i,
+//                };
+//                
+//                pupil.Lessons.Add(lesson);
+//
+//                lesson.Number /= 2;
+//                lesson.Partner = "Another name";
+//                lesson.Date = lesson.Date.AddDays(-7);
+//                    
+//                
+//                pupil.Lessons.Add(lesson);
+//                
+//                Store.Store.Instance.Load(pupil);
+//            }
 //
             var dataContext = new ScheduleViewModel();
             ScheduleView.DataContext = dataContext;

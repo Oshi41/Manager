@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:control="clr-namespace:Manager.Control"
+             xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -15,8 +16,11 @@
 
     <UserControl.Resources>
 
-        <system:Double x:Key="CellWidth">32</system:Double>
-        <system:Double x:Key="ItemHeight">32</system:Double>
+        <!-- Макс. высота элемента -->
+        <system:Double x:Key="MaxItemHeight">50</system:Double>
+
+        <converters:MathConverter Operation="Multiply"
+                                  x:Key="MathConverter" />
 
 
         <DataTemplate DataType="{x:Type viewModels:WeekItem}">
@@ -28,9 +32,7 @@
 
     <materialDesign:DialogHost Identifier="LessonHost">
         <materialDesign:DialogHost Identifier="PupilHost">
-
             <Grid>
-
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"
                                       MinWidth="150" />
@@ -39,9 +41,11 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
+                <!-- Верхняя левая панел -->
                 <DockPanel>
                     <Button DockPanel.Dock="Left"
                             Style="{DynamicResource MaterialDesignFloatingActionButton}"
@@ -60,25 +64,45 @@
                     </Button>
                 </DockPanel>
 
-                <!-- Даты -->
+                <!-- Заголовки даты -->
                 <ItemsControl Grid.Column="1"
-                              Grid.Row="0" />
+                              Grid.Row="0"
+                              ItemsSource="{Binding Path=Dates}"
+                              VerticalAlignment="Bottom">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding StringFormat={}{0:dd.MM.yy}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
 
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding Path=Dates.Count}"
+                                         MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
 
                 <!-- Список учеников -->
                 <ItemsControl Grid.Column="0"
                               Grid.Row="1"
-                              ItemsSource="{Binding Pupils}">
+                              ItemsSource="{Binding Pupils}"
+                              VerticalAlignment="Top">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Rows="{Binding Pupils.Count}" />
+                            <UniformGrid Rows="{Binding Pupils.Count}"
+                                         Height="{Binding ElementName=Table, Path=ActualHeight}"
+                                         MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type viewModels:PupilViewModel}">
-                            <DockPanel Height="{StaticResource ItemHeight}">
+                            <DockPanel>
                                 <TextBox Text="{Binding Path=Name}"
                                          DockPanel.Dock="Left"
+                                         VerticalAlignment="Center"
                                          HorizontalAlignment="Left"
                                          IsReadOnly="True"
                                          MinWidth="120"
@@ -87,6 +111,7 @@
                                 <Button DockPanel.Dock="Left"
                                         Style="{DynamicResource MaterialDesignFloatingActionButton}"
                                         HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
                                         Width="16"
                                         Command="{Binding Path=ChangePupilCommand}"
                                         Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}">
@@ -106,18 +131,61 @@
                 <!-- Расписание -->
                 <ItemsControl Grid.Column="1"
                               Grid.Row="1"
-                              ItemsSource="{Binding Items}">
+                              ItemsSource="{Binding Items}"
+                              x:Name="Table"
+                              VerticalAlignment="Top">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <control:UniformGridPanel Rows="{Binding Path=Pupils.Count}"
                                                       Orientation="Vertical"
-                                                      Columns="{Binding Path=WeeksCount}" />
+                                                      Columns="{Binding Path=WeeksCount}"
+                                                      MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}"
+                                                      MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                 </ItemsControl>
 
+                <!-- Панель перемотки -->
+                <Grid Grid.Column="1"
+                      Grid.Row="2"
+                      Margin="0 5 0 0"
+                      VerticalAlignment="Top"
+                      HorizontalAlignment="Stretch">
 
+                    <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                            Command="{Binding MovePrevCommand}"
+                            DockPanel.Dock="Left"
+                            HorizontalAlignment="Left"
+                            Width="24"
+                            Height="24">
+                        <Viewbox>
+                            <materialDesign:PackIcon Kind="ChevronDoubleLeft" />
+                        </Viewbox>
+                    </Button>
+
+                    <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                            Command="{Binding RefreshCommand}"
+                            HorizontalAlignment="Center"
+                            Width="24"
+                            Height="24"
+                            ToolTip="Вернуться к сегодняшней неделе">
+                        <Viewbox>
+                            <materialDesign:PackIcon Kind="CalendarToday" />
+                        </Viewbox>
+                    </Button>
+                    
+                    <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                            Command="{Binding MoveNextCommand}"
+                            DockPanel.Dock="Right"
+                            HorizontalAlignment="Right"
+                            Width="24"
+                            Height="24">
+                        <Viewbox>
+                            <materialDesign:PackIcon Kind="ChevronDoubleRight" />
+                        </Viewbox>
+                    </Button>
+                </Grid>
             </Grid>
         </materialDesign:DialogHost>
     </materialDesign:DialogHost>

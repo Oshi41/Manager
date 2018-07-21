@@ -157,8 +157,13 @@ namespace Manager.ViewModels
 
         protected override void RefreshOverride(Pupil model)
         {
+            var selected = SelectedLesson?.ToModel();
+            
             Name = model.Name;
             Lessons = new ObservableCollection<LessonViewModel>(model.Lessons.Select(x => new LessonViewModel(x)));
+            
+            if (selected != null)
+                SelectedLesson = new LessonViewModel(selected);
         }
         #endregion
     }

@@ -86,6 +86,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Control\UniformGridPanel.cs"/>
+    <Compile Include="Converters\BoolToVisConverter.cs"/>
+    <Compile Include="Converters\DescriptionConverter.cs"/>
+    <Compile Include="Converters\MathConverter.cs"/>
     <Compile Include="Parsable\Lesson.cs" />
     <Compile Include="Parsable\LessonTypes.cs" />
     <Compile Include="Parsable\Pupil.cs" />

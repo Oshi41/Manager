@@ -12,7 +12,7 @@ namespace Manager.ViewModels
 
         private string _name;
         private string _partner;
-        private int _number;
+        private int? _number;
         private DateTime _date;
         private bool _isMain = true;
         private LessonTypes _lessonType;
@@ -22,33 +22,70 @@ namespace Manager.ViewModels
         #endregion
 
         public LessonViewModel()
-            :this(null)
+            : this(null)
         {
-            
+
         }
-        
+
         public LessonViewModel(Lesson model = null) : base(model)
         {
-            AllPupils = Store.Store.Instance.FindAll().Select(x => x.Name).ToList();
-            
+            AllPupils = Store
+                        .Store
+                        .Instance
+                        .FindAll()
+                        .Where(x => !string.Equals(x.Name, Name))
+                        .Select(x => x.Name).ToList();
+
             if (Date == default(DateTime))
                 Date = DateTime.Today;
-            
         }
 
         #region Properties
 
-        public string Name { get => _name; set => SetProperty(ref _name, value); }
-        public string Partner { get => _partner; set => SetProperty(ref _partner, value); }
-        public int Number { get => _number; set => SetProperty(ref _number, value); }
-        public DateTime Date { get => _date; set => SetProperty(ref _date, value); }
-        public bool IsMain { get => _isMain; set => SetProperty(ref _isMain, value); }
-        public LessonTypes LessonType { get => _lessonType; set => SetProperty(ref _lessonType, value); }
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public string Partner
+        {
+            get => _partner;
+            set => SetProperty(ref _partner, value);
+        }
+
+        public int? Number
+        {
+            get => _number;
+            set => SetProperty(ref _number, value);
+        }
+
+        public DateTime Date
+        {
+            get => _date;
+            set => SetProperty(ref _date, value);
+        }
+
+        public bool IsMain
+        {
+            get => _isMain;
+            set
+            {
+                if (SetProperty(ref _isMain, value))
+                    Number = null;
+            }
+        }
+
+        public LessonTypes LessonType
+        {
+            get => _lessonType;
+            set => SetProperty(ref _lessonType, value);
+        }
 
         public List<string> AllPupils
         {
             get => _allPupils;
-            set => SetProperty(ref _allPupils ,value);
+            set => SetProperty(ref _allPupils, value);
         }
 
         public static List<int> AllLessons { get; } = Enumerable.Range(1, 53).ToList();
@@ -56,13 +93,14 @@ namespace Manager.ViewModels
         #endregion
 
         #region Implemented
+
         public override Lesson ToModel()
         {
             return new Lesson
             {
                 Name = Name,
                 Partner = Partner,
-                Number = Number,
+                Number = Number ?? 0,
                 Date = Date,
                 IsMain = IsMain,
                 LessonType = LessonType,
@@ -78,6 +116,7 @@ namespace Manager.ViewModels
             IsMain = model.IsMain;
             LessonType = model.LessonType;
         }
+
         #endregion
     }
 }
