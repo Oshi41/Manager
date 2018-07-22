@@ -131,6 +131,7 @@ namespace Manager.ViewModels
                                                               .Store
                                                               .Instance
                                                               .FindAll()
+                                                              .OrderBy(x => x.Name)
                                                               .Select(x => new PupilViewModel(x)));
             RefreshSchedule(middle);
         }
