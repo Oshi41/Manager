@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:views="clr-namespace:Manager.Views"
              xmlns:converters="clr-namespace:Manager.Converters"
-             StartupUri="MainWindow.xaml">
+             StartupUri="Windows/StartWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,7 +24,8 @@
                             x:Shared="False">
                 True
             </system:Boolean>
-
+            
+            <!-- Темплейты для видов -->
 
             <DataTemplate DataType="{x:Type viewModels:LessonViewModel}">
                 <views:EditLessonView />
@@ -33,6 +34,19 @@
             <DataTemplate DataType="{x:Type viewModels:PupilViewModel}">
                 <views:EditPupilView />
             </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModels:LoadingViewModel}">
+                <views:LoadView />
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModels:ScheduleViewModel}">
+                <views:ScheduleView />
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModels:WeekItem}">
+                <views:WeekItemView />
+            </DataTemplate>
+
             
             <!-- Конвертер высоты для редактирования ученика -->
             <converters:MathConverter x:Key="HeightPupilConverter"

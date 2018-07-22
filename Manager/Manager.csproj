@@ -124,6 +124,12 @@
     <Compile Include="Views\WeekItemView.xaml.cs">
       <DependentUpon>WeekItemView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\AppWindow.xaml.cs">
+      <DependentUpon>AppWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\StartWindow.xaml.cs">
+      <DependentUpon>StartWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -141,6 +147,8 @@
     <Page Include="Views\LoadView.xaml" />
     <Page Include="Views\ScheduleView.xaml"/>
     <Page Include="Views\WeekItemView.xaml"/>
+    <Page Include="Windows\AppWindow.xaml"/>
+    <Page Include="Windows\StartWindow.xaml"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

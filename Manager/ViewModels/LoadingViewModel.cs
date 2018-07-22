@@ -24,8 +24,8 @@ namespace Manager.ViewModels
         private bool _loadFromFile;
         private SecureString _password;
         private bool _useBase64;
-        private bool _noEncr;
-        
+        private bool _useEncr;
+
         private RijndaelManaged _crypter = new RijndaelManaged();
 
         #endregion
@@ -46,10 +46,10 @@ namespace Manager.ViewModels
 
         private EncryptionType EncrType { get; set; }
 
-        public bool NoEncr
+        public bool UseEncr
         {
-            get => _noEncr;
-            set => SetProperty(ref _noEncr, value);
+            get => _useEncr;
+            set => SetProperty(ref _useEncr, value);
         }
 
         public bool UseBase64
@@ -115,6 +115,7 @@ namespace Manager.ViewModels
             set => SetProperty(ref _loadFromFile, value);
         }
 
+        public bool WasLoaded { get; set; }
 
         #endregion
 
@@ -174,22 +175,22 @@ namespace Manager.ViewModels
 
         private void OnLoadCommand()
         {
-            var json = string.Empty;
-
-            if (File.Exists(FilePath))
-            {
-                json = File.ReadAllText(FilePath);
-
-                if (!NoEncr)
-                {
-                    json = TryEncrypt(json);
-                }
-            }
-
             try
             {
-                var pupils = JsonConvert.DeserializeObject<List<Pupil>>(json);
-                Store.Store.Instance.Load(pupils);
+                if (File.Exists(FilePath))
+                {
+                    var json = File.ReadAllText(FilePath);
+
+                    if (UseEncr)
+                    {
+                        json = TryEncrypt(json);
+                    }
+
+                    var pupils = JsonConvert.DeserializeObject<List<Pupil>>(json);
+                    Store.Store.Instance.Load(pupils);
+
+                    WasLoaded = true;
+                }
             }
             catch
             {
@@ -199,15 +200,25 @@ namespace Manager.ViewModels
 
         private void OnSaveCommand()
         {
-            var json = JsonConvert.SerializeObject(Store.Store.Instance.FindAll());
-
-            if (!NoEncr)
+            try
             {
-                json = TryCrypt(json);
+                var json = JsonConvert.SerializeObject(Store.Store.Instance.FindAll());
+
+                if (UseEncr)
+                {
+                    json = TryCrypt(json);
+                }
+
+
+                File.WriteAllText(FilePath, json);
+
+                WasLoaded = true;
+            }
+            catch
+            {
+
             }
 
-
-            File.WriteAllText(FilePath, json);
         }
 
         #endregion
@@ -225,16 +236,16 @@ namespace Manager.ViewModels
             {
                 text = ToBase64(text);
             }
-            
+
             if (EncrType.HasFlag(EncryptionType.Password))
             {
                 text = WithPass(PasswordBindBehavior.SecureStringToString(Password));
             }
-            
+
             if (EncrType.HasFlag(EncryptionType.ForMachine))
             {
                 text = WithPass(GetUniqueKey());
-                
+
             }
 
             return text;
@@ -269,7 +280,7 @@ namespace Manager.ViewModels
         private byte[] GetValidKey()
         {
             var bytes = new byte[_crypter.KeySize / 8];
-            
+
             for (int i = 0; i < bytes.Length; i++)
             {
                 bytes[i] = byte.MaxValue;
@@ -293,14 +304,14 @@ namespace Manager.ViewModels
                 "SerialNumber",
             };
 
-            
+
             var mc = new ManagementClass("Win32_processor");
             var moc = mc.GetInstances();
 
             foreach (var mo in moc)
             {
                 var properties = mo.Properties.OfType<PropertyData>().ToList();
-                
+
                 foreach (var propName in names)
                 {
                     var temp = properties.FirstOrDefault(x => string.Equals(x.Name, propName));
@@ -327,19 +338,19 @@ namespace Manager.ViewModels
         {
             var bytes = Encoding.Unicode.GetBytes(text);
             var copy = new byte[bytes.Length];
-            
+
             using (var memoryStream = new MemoryStream(bytes))
             {
                 // получил нужный размер ключа
                 _crypter.Key = GetValidKey();
-                
+
                 // создал дешифратор
                 using (var decrypter = _crypter.CreateDecryptor())
                 {
                     // создал поток дешифратора
                     using (var cryptoStream = new CryptoStream(memoryStream, decrypter, CryptoStreamMode.Read))
                     {
-                        
+
                         cryptoStream.Read(copy, 0, copy.Length);
                     }
                 }
@@ -351,19 +362,19 @@ namespace Manager.ViewModels
         private string WithPass(string text)
         {
             var bytes = Encoding.Unicode.GetBytes(text);
-            
+
             using (var memoryStream = new MemoryStream())
             {
                 // получил нужный размер ключа
                 _crypter.Key = GetValidKey();
-                
+
                 // создал дешифратор
                 using (var encrypter = _crypter.CreateEncryptor())
                 {
                     // создал поток дешифратора
                     using (var cryptoStream = new CryptoStream(memoryStream, encrypter, CryptoStreamMode.Write))
                     {
-                        
+
                         cryptoStream.Write(bytes, 0, bytes.Length);
                     }
                 }
