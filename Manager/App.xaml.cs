@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO.Packaging;
+using System.Security;
 using System.Windows;
 using System.Windows.Navigation;
+using Manager.Models;
 using Manager.ViewModels;
 using Manager.Windows;
 
@@ -14,6 +17,31 @@ namespace Manager
         public App()
         {
             //InitialLoading();
+
+            //CryptTest();
+        }
+
+        private void CryptTest()
+        {
+            var password = "1234567890123456";
+            var pass = new SecureString();
+            foreach (var c in password)
+            {
+                pass.AppendChar(c);
+            }
+
+            EncryptionType type = EncryptionType.ForMachine;
+
+            var model = new CryptoModel();
+
+
+            var text = "Очень сложный и запустыннй текст? event using the Edlish letters";
+
+            var encrypted = model.Encrypt(type, text, pass);
+
+            var decrypted = model.Decrypt(type, encrypted, pass);
+
+            var equals = string.Equals(decrypted, text);
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Security.Cryptography;
 using System.Text;
 using Manager.Behaviors;
+using Manager.Models;
 
 namespace Manager.ViewModels
 {
@@ -23,10 +24,10 @@ namespace Manager.ViewModels
         private string _filePath;
         private bool _loadFromFile;
         private SecureString _password;
-        private bool _useBase64;
         private bool _useEncr;
 
-        private RijndaelManaged _crypter = new RijndaelManaged();
+        private CryptoModel _model = new CryptoModel();
+        private EncryptionType _encryptionType;
 
         #endregion
 
@@ -44,69 +45,17 @@ namespace Manager.ViewModels
             set => SetProperty(ref _filePath, value);
         }
 
-        private EncryptionType EncrType { get; set; }
+        public EncryptionType EncryptionType
+        {
+            get => _encryptionType;
+            set => SetProperty(ref _encryptionType, value);
+        }
+
 
         public bool UseEncr
         {
             get => _useEncr;
             set => SetProperty(ref _useEncr, value);
-        }
-
-        public bool UseBase64
-        {
-            get => EncrType.HasFlag(EncryptionType.Base64);
-            set
-            {
-                if (value == UseBase64)
-                    return;
-
-                if (value)
-                    EncrType ^= EncryptionType.Base64;
-                else
-                {
-                    EncrType &= ~EncryptionType.Base64;
-                }
-
-                OnPropertyChanged();
-            }
-        }
-
-        public bool UsePassword
-        {
-            get => EncrType.HasFlag(EncryptionType.Password);
-            set
-            {
-                if (value == UsePassword)
-                    return;
-
-                if (value)
-                    EncrType ^= EncryptionType.Password;
-                else
-                {
-                    EncrType &= ~EncryptionType.Password;
-                }
-
-                OnPropertyChanged();
-            }
-        }
-
-        public bool UseForMachine
-        {
-            get => EncrType.HasFlag(EncryptionType.ForMachine);
-            set
-            {
-                if (value == UseForMachine)
-                    return;
-
-                if (value)
-                    EncrType ^= EncryptionType.ForMachine;
-                else
-                {
-                    EncrType &= ~EncryptionType.ForMachine;
-                }
-
-                OnPropertyChanged();
-            }
         }
 
         public bool IsLoadFromFile
@@ -139,26 +88,28 @@ namespace Manager.ViewModels
 
         private bool OnCanActionCommand()
         {
+            if (EncryptionType == EncryptionType.Password 
+                && (Password == null || Password.Length < 4))
+            {
+                return false;
+            }
+            
             return IsLoadFromFile
                 ? OnCanLoadCommand()
                 : OnCanSave();
         }
 
+
         private bool OnCanLoadCommand()
         {
-            if (File.Exists(FilePath))
-                return false;
-
-            if (UsePassword && Password.Length < 4)
-                return false;
-
-            return true;
+            return File.Exists(FilePath);
         }
 
         private bool OnCanSave()
         {
             return !string.IsNullOrWhiteSpace(FilePath);
         }
+
 
         private void OnOpenFile()
         {
@@ -173,6 +124,7 @@ namespace Manager.ViewModels
                 FilePath = dlg.FileName;
         }
 
+
         private void OnLoadCommand()
         {
             try
@@ -181,10 +133,12 @@ namespace Manager.ViewModels
                 {
                     var json = File.ReadAllText(FilePath);
 
-                    if (UseEncr)
-                    {
-                        json = TryEncrypt(json);
-                    }
+                    EncryptionType? type = EncryptionType;
+
+                    if (!UseEncr)
+                        type = null;
+
+                    json = _model.Decrypt(type, json, Password);
 
                     var pupils = JsonConvert.DeserializeObject<List<Pupil>>(json);
                     Store.Store.Instance.Load(pupils);
@@ -204,11 +158,12 @@ namespace Manager.ViewModels
             {
                 var json = JsonConvert.SerializeObject(Store.Store.Instance.FindAll());
 
-                if (UseEncr)
-                {
-                    json = TryCrypt(json);
-                }
+                EncryptionType? type = EncryptionType;
 
+                if (!UseEncr)
+                    type = null;
+
+                json = _model.Encrypt(type, json, Password);
 
                 File.WriteAllText(FilePath, json);
 
@@ -219,168 +174,6 @@ namespace Manager.ViewModels
 
             }
 
-        }
-
-        #endregion
-
-        #region Helping methods
-
-        /// <summary>
-        /// Пытаемся зашифровать
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private string TryEncrypt(string text)
-        {
-            if (EncrType.HasFlag(EncryptionType.Base64))
-            {
-                text = ToBase64(text);
-            }
-
-            if (EncrType.HasFlag(EncryptionType.Password))
-            {
-                text = WithPass(PasswordBindBehavior.SecureStringToString(Password));
-            }
-
-            if (EncrType.HasFlag(EncryptionType.ForMachine))
-            {
-                text = WithPass(GetUniqueKey());
-
-            }
-
-            return text;
-        }
-
-        /// <summary>
-        /// Пытаемся расшифровать. Порядок обратный шифровке!!!
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private string TryCrypt(string text)
-        {
-            if (EncrType.HasFlag(EncryptionType.ForMachine))
-            {
-                text = FromPass(GetUniqueKey());
-            }
-
-            if (EncrType.HasFlag(EncryptionType.Password))
-            {
-                text = FromPass(PasswordBindBehavior.SecureStringToString(Password));
-            }
-
-            if (EncrType.HasFlag(EncryptionType.Base64))
-            {
-                text = FromBase64(text);
-            }
-
-            return text;
-        }
-
-        // заполняем остальное единицами
-        private byte[] GetValidKey()
-        {
-            var bytes = new byte[_crypter.KeySize / 8];
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                bytes[i] = byte.MaxValue;
-            }
-
-            var password = Encoding.Unicode.GetBytes(PasswordBindBehavior.SecureStringToString(Password));
-            for (int i = 0; i < password.Length && i < 16; i++)
-            {
-                bytes[i] |= password[i];
-            }
-
-            return bytes;
-        }
-
-        public string GetUniqueKey()
-        {
-            var names = new[]
-            {
-                "UniqueId",
-                "ProcessorId",
-                "SerialNumber",
-            };
-
-
-            var mc = new ManagementClass("Win32_processor");
-            var moc = mc.GetInstances();
-
-            foreach (var mo in moc)
-            {
-                var properties = mo.Properties.OfType<PropertyData>().ToList();
-
-                foreach (var propName in names)
-                {
-                    var temp = properties.FirstOrDefault(x => string.Equals(x.Name, propName));
-
-                    if (!string.IsNullOrEmpty(temp?.Value?.ToString()))
-                        return temp.Value.ToString();
-                }
-            }
-
-            return string.Empty;
-        }
-
-        private string ToBase64(string text)
-        {
-            return Convert.ToBase64String(Encoding.Unicode.GetBytes(text));
-        }
-
-        private string FromBase64(string text)
-        {
-            return Encoding.Unicode.GetString(Convert.FromBase64String(text));
-        }
-
-        private string FromPass(string text)
-        {
-            var bytes = Encoding.Unicode.GetBytes(text);
-            var copy = new byte[bytes.Length];
-
-            using (var memoryStream = new MemoryStream(bytes))
-            {
-                // получил нужный размер ключа
-                _crypter.Key = GetValidKey();
-
-                // создал дешифратор
-                using (var decrypter = _crypter.CreateDecryptor())
-                {
-                    // создал поток дешифратора
-                    using (var cryptoStream = new CryptoStream(memoryStream, decrypter, CryptoStreamMode.Read))
-                    {
-
-                        cryptoStream.Read(copy, 0, copy.Length);
-                    }
-                }
-            }
-
-            return Encoding.Unicode.GetString(copy);
-        }
-
-        private string WithPass(string text)
-        {
-            var bytes = Encoding.Unicode.GetBytes(text);
-
-            using (var memoryStream = new MemoryStream())
-            {
-                // получил нужный размер ключа
-                _crypter.Key = GetValidKey();
-
-                // создал дешифратор
-                using (var encrypter = _crypter.CreateEncryptor())
-                {
-                    // создал поток дешифратора
-                    using (var cryptoStream = new CryptoStream(memoryStream, encrypter, CryptoStreamMode.Write))
-                    {
-
-                        cryptoStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
-
-                return Encoding.Unicode.GetString(memoryStream.GetBuffer());
-            }
         }
 
         #endregion
@@ -400,7 +193,6 @@ namespace Manager.ViewModels
         }
     }
 
-    [Flags]
     public enum EncryptionType
     {
         Base64 = 1,

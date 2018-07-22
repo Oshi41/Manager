@@ -81,7 +81,7 @@ namespace Manager.ViewModels
 
         private async void EditLesson()
         {
-            var old = SelectedLesson.ToModel();
+            var old = SelectedLesson?.ToModel();
 
             var newViewModel = new LessonViewModel(old);
             
@@ -110,6 +110,7 @@ namespace Manager.ViewModels
 
             var lesson = vm.ToModel();
             
+            Lessons.Add(vm);
             Store.Store.Instance.AddLesson(lesson);
             
             // создаем таск для партнера

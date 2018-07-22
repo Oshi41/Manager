@@ -87,17 +87,22 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\BubbleScrollBehavior.cs"/>
+    <Compile Include="Behaviors\DoubliClickBehavior.cs"/>
     <Compile Include="Behaviors\PasswordBindBehavior.cs"/>
     <Compile Include="Behaviors\TwoParamsDoubleClickBehavior.cs"/>
     <Compile Include="Control\SelectiveStackPanel.cs"/>
     <Compile Include="Control\UniformGridPanel.cs"/>
     <Compile Include="Converters\BoolToVisConverter.cs"/>
     <Compile Include="Converters\DescriptionConverter.cs"/>
+    <Compile Include="Converters\EnumToBoolConverter.cs"/>
     <Compile Include="Converters\IntColorConverter.cs"/>
     <Compile Include="Converters\InvertBoolConverter.cs"/>
     <Compile Include="Converters\MathConverter.cs"/>
     <Compile Include="Converters\MoreThanToVisConverter.cs"/>
     <Compile Include="Converters\NotNullChooseConverter.cs"/>
+    <Compile Include="Helper\CryptoHelper.cs"/>
+    <Compile Include="Helper\DateHelper.cs"/>
+    <Compile Include="Models\CryptoModel.cs"/>
     <Compile Include="Parsable\Lesson.cs" />
     <Compile Include="Parsable\LessonTypes.cs" />
     <Compile Include="Parsable\Pupil.cs" />

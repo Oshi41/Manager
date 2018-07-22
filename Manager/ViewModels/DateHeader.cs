@@ -1,4 +1,5 @@
 ﻿using System;
+using Manager.Helper;
 using Mvvm;
 
 namespace Manager.ViewModels
@@ -19,7 +20,7 @@ namespace Manager.ViewModels
         {
             DateTime = time ?? DateTime.Now;
 
-            IsPresentWeek = Store.Helper.TheSameWeek(DateTime, DateTime.Today);
+            IsPresentWeek = DateHelper.TheSameWeek(DateTime, DateTime.Today);
         }
 
         #region Work with DateTime

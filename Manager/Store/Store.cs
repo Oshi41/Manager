@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Manager.Helper;
 using WeakEvents;
 
 namespace Manager.Store
@@ -147,7 +148,7 @@ namespace Manager.Store
         {
             var lessons = _pupils
                 .SelectMany(x => x.Lessons)
-                .Where(x => Helper.TheSameWeek(x.Date, week))
+                .Where(x => DateHelper.TheSameWeek(x.Date, week))
                 .OrderBy(x => x.Date)
                 .ToList();
 
@@ -172,27 +173,5 @@ namespace Manager.Store
         #endregion
     }
 
-    public static class Helper
-    {
-        /// <summary>
-        /// Возвращает полночь понедельника недели
-        /// </summary>
-        /// <param name="first"></param>
-        /// <returns></returns>
-        public static DateTime GetMonday(DateTime first)
-        {
-            while (first.DayOfWeek != DayOfWeek.Monday)
-                first = first.AddDays(-1);
-
-            return new DateTime(first.Year, first.Month, first.Day);
-        }
-
-        public static bool TheSameWeek(DateTime first, DateTime second)
-        {
-            first = GetMonday(first);
-            second = GetMonday(second);
-
-            return first == second;
-        }
-    }
+    
 }

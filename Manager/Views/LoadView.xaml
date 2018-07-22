@@ -12,11 +12,11 @@
              mc:Ignorable="d"
              d:DesignHeight="400"
              d:DesignWidth="320"
-             d:DataContext="{d:DesignInstance {x:Type viewModels:LoadingViewModel}}"
-             >
-    
+             d:DataContext="{d:DesignInstance {x:Type viewModels:LoadingViewModel}}">
+
     <UserControl.Resources>
-        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+        <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
     </UserControl.Resources>
 
     <materialDesign:DialogHost IsOpen="{Binding Path=IsLoadFromFile, Mode=OneWay}">
@@ -26,17 +26,17 @@
                         ToolTip="Выберите файл, созданный ранее, и загрузите список учеников."
                         Command="{Binding Path=SelectFilePathCommand}"
                         Click="CloseDialogHost"
-                        Margin="20"/>
-                
-                <Button Content="Начать работу"          
+                        Margin="20 20 20 0" />
+
+                <Button Content="Начать работу"
                         ToolTip="Если используете программу впервые, выбирайте этот вариант."
                         Style="{DynamicResource MaterialDesignFlatButton}"
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         Margin="20"
-                        Click="CloseCurrentWindow"/>
+                        Click="CloseCurrentWindow" />
             </StackPanel>
         </materialDesign:DialogHost.DialogContent>
-        
+
         <DockPanel Dock="Top"
                    Margin="10 10 10 0">
             <TextBlock FontSize="20"
@@ -75,39 +75,39 @@
                 <GroupBox.Header>
                     <CheckBox Content="Использовать шифрование"
                               Style="{StaticResource MaterialDesignAccentCheckBox}"
-                              ToolTip="Можно выбрать сразу несколько параметров."
+                              ToolTip="Выберите формат шифрования."
                               IsChecked="{Binding Path=UseEncr}" />
                 </GroupBox.Header>
                 <DockPanel IsEnabled="{Binding Path=UseEncr}">
-                    <CheckBox DockPanel.Dock="Top"
-                              IsChecked="{Binding Path=UseBase64}"
-                              Content="Преобразовать в байты"
-                              ToolTip="Преобразует понятный человеку текст в подобие машинного. Лёгкое решение, но ненадёжное." />
+                    <RadioButton DockPanel.Dock="Top"
+                                 IsChecked="{Binding Path=EncryptionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Base64}"
+                                 Content="Преобразовать в байты"
+                                 ToolTip="Преобразует понятный человеку текст в подобие машинного. Лёгкое решение, но ненадёжное." />
 
-                    <CheckBox DockPanel.Dock="Top"
-                              Margin="0 5"
-                              IsChecked="{Binding Path=UsePassword}"
-                              Content="Шифровать с паролем"
-                              ToolTip="Шифрует текст с помощью ключа. Максимальная надёжность, взлом возможен лишь подбором." />
+                    <RadioButton DockPanel.Dock="Top"
+                                 Margin="0 5"
+                                 IsChecked="{Binding Path=EncryptionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Password}"
+                                 Content="Шифровать с паролем"
+                                 ToolTip="Шифрует текст с помощью ключа. Максимальная надёжность, взлом возможен лишь подбором." />
 
                     <PasswordBox DockPanel.Dock="Top"
                                  Margin="20 0 0 0"
                                  Width="150"
                                  HorizontalAlignment="Left"
-                                 IsEnabled="{Binding Path=UsePassword}"
+                                 IsEnabled="{Binding Path=EncryptionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Password}"
                                  MaxLength="16"
                                  ToolTip="Длина пароля от 4 до 16 символов">
-                        
-                        <i:Interaction.Behaviors>
-                            <behaviors:PasswordBindBehavior Password="{Binding Password}"/>
-                        </i:Interaction.Behaviors>
-                        
-                        </PasswordBox>
 
-                    <CheckBox DockPanel.Dock="Top"
-                              IsChecked="{Binding Path=UseForMachine}"
-                              Content="Уникальный шифр для машины"
-                              ToolTip="Шифрует текст с помощью ключа, уникального для этой машины. Лёгкое решение, но при смене операционной системы, ключ будет навсегда утерян." />
+                        <i:Interaction.Behaviors>
+                            <behaviors:PasswordBindBehavior Password="{Binding Password}" />
+                        </i:Interaction.Behaviors>
+
+                    </PasswordBox>
+
+                    <RadioButton DockPanel.Dock="Top"
+                                 IsChecked="{Binding Path=EncryptionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ForMachine}"
+                                 Content="Уникальный шифр для машины"
+                                 ToolTip="Шифрует текст с помощью ключа, уникального для этой машины. Лёгкое решение, но при смене операционной системы, ключ будет навсегда утерян." />
                 </DockPanel>
             </GroupBox>
 
@@ -115,8 +115,8 @@
                     Margin="20"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
-                    Command="{Binding Path=ActionCommand}" 
-                    Click="JustClose"/>
+                    Command="{Binding Path=ActionCommand}"
+                    Click="JustClose" />
         </DockPanel>
     </materialDesign:DialogHost>
 

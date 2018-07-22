@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Manager.Helper;
 using Mvvm;
 
 namespace Manager.ViewModels
@@ -51,9 +52,8 @@ namespace Manager.ViewModels
             Pupil = new PupilViewModel(pupil.ToModel());
             Lessons = pupil
                       .Lessons
-                      .Where(x => Store
-                                  .Helper
-                                  .TheSameWeek(date, x.Date))
+                      .Where(x => DateHelper
+                                 .TheSameWeek(date, x.Date))
                       .ToList();
             
             HasValue = Lessons.Any();

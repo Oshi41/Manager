@@ -59,19 +59,5 @@ namespace Manager.Behaviors
 
             _flag = false;
         }
-
-        public static String SecureStringToString(SecureString value)
-        {
-            var bstr = Marshal.SecureStringToBSTR(value);
-
-            try
-            {
-                return Marshal.PtrToStringBSTR(bstr);
-            }
-            finally
-            {
-                Marshal.FreeBSTR(bstr);
-            }
-        }
     }
 }

@@ -1,0 +1,29 @@
+﻿using System;
+using System.Globalization;
+using System.Windows.Data;
+
+namespace Manager.Converters
+{
+    public class EnumToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                return string.Equals(value?.ToString(), parameter?.ToString());
+            }
+            catch
+            {
+                return Binding.DoNothing;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (true.Equals(value))
+                return parameter;
+
+            return Binding.DoNothing;
+        }
+    }
+}

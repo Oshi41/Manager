@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
+using Manager.Helper;
 
 namespace Manager.ViewModels
 {
@@ -91,7 +92,7 @@ namespace Manager.ViewModels
         {
             var time = DateTime.Now;
             var middle = Dates[Dates.Count / 2];
-            if (!Store.Helper.TheSameWeek(time, (DateTime)middle))
+            if (!DateHelper.TheSameWeek(time, (DateTime)middle))
                 RefreshFromStore(DateTime.Now);
         }
 
@@ -142,7 +143,7 @@ namespace Manager.ViewModels
 
             var list = new List<WeekItem>();
 
-            middle = Store.Helper.GetMonday(middle);
+            middle = DateHelper.GetMonday(middle);
 
             FillDates(middle);
 
