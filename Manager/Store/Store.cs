@@ -162,7 +162,7 @@ namespace Manager.Store
         public Pupil FindByName(string name)
         {
             if (name == null)
-                return new Pupil();
+                return null;
 
             var find = _pupils.FirstOrDefault(x => string.Equals(name, x.Name));
 

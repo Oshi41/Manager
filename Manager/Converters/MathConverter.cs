@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Manager.Converters
 {
-    public class MathConverter : IValueConverter
+    public class MathConverter : DependencyObject, IValueConverter
     {
-        public double Add { get; set; } = 0;
-        public double Deduct { get; set; } = 0;
-        public double Multiply { get; set; } = 1;
-        public double Divide { get; set; } = 1;
+        public static readonly DependencyProperty MultiplyProperty = DependencyProperty.Register(
+                                                        "Multiply", typeof(int), typeof(MathConverter), new PropertyMetadata(1));
+
+        public int Multiply
+        {
+            get { return (int) GetValue(MultiplyProperty); }
+            set { SetValue(MultiplyProperty, value); }
+        }
         
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (double.TryParse(value?.ToString(), out var val))
             {
-                return val * Multiply / Divide + Add - Deduct;
+                return val * Multiply;
             }
 
             return Binding.DoNothing;

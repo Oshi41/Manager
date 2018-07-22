@@ -9,6 +9,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:control="clr-namespace:Manager.Control"
              xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+             xmlns:converters1="clr-namespace:Manager.Converters"
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -21,6 +22,8 @@
 
         <converters:MathConverter Operation="Multiply"
                                   x:Key="MathConverter" />
+        
+        <converters1:IntColorConverter x:Key="IntColorConverter"/>
 
 
         <DataTemplate DataType="{x:Type viewModels:WeekItem}">
@@ -43,6 +46,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- Верхняя левая панел -->
@@ -54,7 +58,8 @@
                             Width="32"
                             Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}"
                             Margin="5 5 0 0"
-                            ToolTip="Добавить ученика">
+                            ToolTip="Добавить ученика"
+                            Command="{Binding Path=AddPupil}">
                         <Button.Content>
                             <Viewbox>
                                 <materialDesign:PackIcon Kind="Plus"
@@ -73,7 +78,21 @@
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
-                                       Text="{Binding StringFormat={}{0:dd.MM.yy}}" />
+                                       Text="{Binding Path=DateTime, StringFormat={}{0:dd.MM.yy}}" >
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}"
+                                           BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Setter Property="Foreground" Value="{Binding Path=DateTime.Month, Converter={StaticResource IntColorConverter}}"/>
+                                        
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsPresentWeek}" Value="True">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                </TextBlock>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
 
@@ -185,6 +204,13 @@
                             <materialDesign:PackIcon Kind="ChevronDoubleRight" />
                         </Viewbox>
                     </Button>
+                </Grid>
+            
+                <Grid Grid.Row="3"
+                      Grid.ColumnSpan="2"
+                      VerticalAlignment="Bottom">
+                    <Button Content="Сохранить"
+                            Margin="10"/>
                 </Grid>
             </Grid>
         </materialDesign:DialogHost>

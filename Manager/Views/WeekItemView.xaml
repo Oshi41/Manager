@@ -8,6 +8,8 @@
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:converters="clr-namespace:Manager.Converters"
+             xmlns:converters1="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+             xmlns:control="clr-namespace:Manager.Control"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="320"
@@ -15,6 +17,10 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        
+        <converters:MathConverter x:Key="MathConverter"
+                                  Multiply="{Binding Path=Lessons.Count}"/>
+        
 
     </UserControl.Resources>
 
@@ -23,13 +29,12 @@
                          HorizontalAlignment="Stretch"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch"
-                         Margin="0 0 1 1"
-                         >
-        
+                         Margin="0 0 1 1">
+
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="MouseDoubleClick">
                 <i:InvokeCommandAction Command="{Binding Pupil.AddEditLessonCommand}"
-                                       CommandParameter="{Binding Path=Date}"/>
+                                       CommandParameter="{Binding Path=Date}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
 
@@ -37,24 +42,56 @@
             <Style TargetType="{x:Type materialDesign:Card}">
                 <Setter Property="Content"
                         Value="{x:Null}" />
-                <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                <Setter Property="Background"
+                        Value="{DynamicResource PrimaryHueMidBrush}" />
 
                 <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                    <Trigger Property="IsMouseOver"
+                             Value="True">
+                        <Setter Property="Background"
+                                Value="{DynamicResource PrimaryHueLightBrush}" />
                     </Trigger>
-                    
+
                     <DataTrigger Binding="{Binding HasValue}"
                                  Value="True">
                         <Setter Property="Content">
                             <Setter.Value>
-                                <Grid VerticalAlignment="Stretch"
-                                      HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <ListView ItemsSource="{Binding Path=Lessons}"
+                                              MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:Card}, Path=ActualHeight}"
+                                              MaxWidth="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:Card}, Path=ActualWidth}"
+                                              SelectedValue="{Binding Path=SelectedLessonViewModel}"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                              ItemContainerStyleSelector="{x:Null}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type viewModels:LessonViewModel}">
+                                                <Grid VerticalAlignment="Stretch"
+                                                      HorizontalAlignment="Stretch">
 
-                                    <TextBlock Text="{Binding Lesson.Number, TargetNullValue=-}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               FontSize="20" />
+                                                    <TextBlock Text="{Binding Number, TargetNullValue=-}"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="20" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Vertical"/>
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+                                    
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="{x:Type ListViewItem}"
+                                                   BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                                <Setter Property="Padding" Value="10"/>
+                                            </Style>
+                                                
+                                        </ListView.ItemContainerStyle>
+                                    
+                                    </ListView>
 
                                     <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
                                             HorizontalAlignment="Right"

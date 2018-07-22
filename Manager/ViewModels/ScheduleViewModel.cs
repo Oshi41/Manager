@@ -17,7 +17,7 @@ namespace Manager.ViewModels
         private ObservableCollection<PupilViewModel> _pupils = new ObservableCollection<PupilViewModel>();
         private ObservableCollection<WeekItem> _items = new ObservableCollection<WeekItem>();
         private int _weeksCount;
-        private ObservableCollection<DateTime> _dates;
+        private ObservableCollection<DateHeader> _dates;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace Manager.ViewModels
             set => SetProperty(ref _items, value);
         }
 
-        public ObservableCollection<DateTime> Dates
+        public ObservableCollection<DateHeader> Dates
         {
             get => _dates;
             set => SetProperty(ref _dates, value);
@@ -65,6 +65,7 @@ namespace Manager.ViewModels
 
         public ICommand SaveCommand { get; set; }
         public ICommand LoadCommand { get; set; }
+        public ICommand AddPupil { get; set; }
 
         #endregion
 
@@ -90,8 +91,14 @@ namespace Manager.ViewModels
         {
             var time = DateTime.Now;
             var middle = Dates[Dates.Count / 2];
-            if (!Store.Helper.TheSameWeek(time, middle))
+            if (!Store.Helper.TheSameWeek(time, (DateTime)middle))
                 RefreshFromStore(DateTime.Now);
+        }
+
+        private void OnCreatePupil()
+        {
+            var vm = new PupilViewModel();
+            vm.ChangePupilCommand.Execute(null);
         }
 
         #endregion
@@ -101,6 +108,7 @@ namespace Manager.ViewModels
             MoveNextCommand = new DelegateCommand(OnMoveNext);
             MovePrevCommand = new DelegateCommand(OnMovePrev);
             RefreshCommand = new DelegateCommand(OnRefresh);
+            AddPupil = new DelegateCommand(OnCreatePupil);
 
             WeeksCount = weekcount;
             RefreshFromStore(DateTime.Today);
@@ -114,7 +122,7 @@ namespace Manager.ViewModels
         {
             var time = Dates[Dates.Count / 2];
 
-            RefreshFromStore(time);
+            RefreshFromStore((DateTime)time);
         }
 
         private void RefreshFromStore(DateTime middle)
@@ -141,7 +149,7 @@ namespace Manager.ViewModels
             {
                 foreach (var date in Dates)
                 {
-                    list.Add(new WeekItem(pupil, date));
+                    list.Add(new WeekItem(pupil, (DateTime)date));
                 }
             }
 
@@ -161,63 +169,10 @@ namespace Manager.ViewModels
 
             dates.Sort();
 
-            Dates = new ObservableCollection<DateTime>(dates);
+            Dates = new ObservableCollection<DateHeader>(dates.Select(x => new DateHeader(x)));
         }
 
         #endregion
 
-    }
-
-    public class WeekItem : BindableBase
-    {
-        #region Fields
-
-        private bool _hasValue;
-        private LessonViewModel _lesson;
-        private PupilViewModel _pupil;
-        private DateTime _date;
-
-        #endregion
-
-        #region Properties
-
-        public bool HasValue
-        {
-            get => _hasValue;
-            set => SetProperty(ref _hasValue, value);
-        }
-
-        public LessonViewModel Lesson
-        {
-            get => _lesson;
-            set => SetProperty(ref _lesson, value);
-        }
-
-        public PupilViewModel Pupil
-        {
-            get => _pupil;
-            set => SetProperty(ref _pupil, value);
-        }
-
-        public DateTime Date
-        {
-            get => _date;
-            set => SetProperty(ref _date, value);
-        }
-
-        #endregion
-
-
-        public WeekItem(PupilViewModel pupil, DateTime date)
-        {
-            Date = date;
-            Pupil = new PupilViewModel(pupil.ToModel());
-            Lesson = pupil.Lessons.FirstOrDefault(x => Store.Helper.TheSameWeek(date, x.Date));
-            HasValue = Lesson != null;
-
-            // Костыль для команд в расписании.
-            // Ссылаемся на команды PupilViewModel
-            Pupil.SelectedLesson = Lesson;
-        }
     }
 }

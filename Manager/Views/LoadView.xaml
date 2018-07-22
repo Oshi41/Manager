@@ -84,8 +84,5 @@
                 VerticalAlignment="Bottom"
                 Command="{Binding Path=ActionCommand}" />
     </DockPanel>
-    <UserControl.DataContext>
-        <viewModels:LoadingViewModel />
-    </UserControl.DataContext>
 
 </UserControl>

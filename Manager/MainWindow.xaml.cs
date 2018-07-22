@@ -41,7 +41,25 @@ namespace Manager
                         LessonType = LessonTypes.Study,
                         Name = "Arkady",
                         Partner = "Balor"
-                    }
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = false,
+                        LessonType = LessonTypes.Study,
+                        Name = "Arkady",
+                        Partner = "Balor1"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = false,
+                        LessonType = LessonTypes.Study,
+                        Name = "Arkady",
+                        Partner = "Balor2"
+                    },
                 }
             };
             
@@ -62,9 +80,26 @@ namespace Manager
                     new Lesson
                     {
                         Date  = DateTime.Today.AddDays(-7 * 2),
-                        IsMain = false,
+                        IsMain = true,
                         LessonType = LessonTypes.Study,
                         Name = "Balor",
+                        Number = 10,
+                        Partner = "Arkady"
+                    }
+                }
+            };
+            
+            var student = new Pupil
+            {
+                Name = "student",
+                Lessons = new List<Lesson>
+                {
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = false,
+                        LessonType = LessonTypes.Study,
+                        Name = "student",
                         Partner = "Arkady"
                     }
                 }
@@ -72,6 +107,7 @@ namespace Manager
             
             Store.Store.Instance.Load(me);
             Store.Store.Instance.Load(balor);
+            Store.Store.Instance.Load(student);
 
 //            for (int i = 0; i < 10; i++)
 //            {

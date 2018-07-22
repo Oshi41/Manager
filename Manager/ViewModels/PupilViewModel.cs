@@ -89,7 +89,12 @@ namespace Manager.ViewModels
             if (!true.Equals(result))
                 return;
 
-            Store.Store.Instance.AddLesson(vm.ToModel());
+            var lesson = vm.ToModel();
+            
+            Store.Store.Instance.AddLesson(lesson);
+            
+            // создаем таск для партнера
+            TryToCreatePartnerLesson(lesson);
         }
 
         private void OnDeletePupil()
@@ -101,17 +106,25 @@ namespace Manager.ViewModels
         private async void OnChangePupil()
         {
             var old = ToModel();
-            
+
             var vm = new PupilViewModel(old);
-            
+
             var result = await DialogHost.Show(vm, "PupilHost");
-            
-            if (!true.Equals(result) 
-                || !vm.hasChanged  
+
+            if (!true.Equals(result)
+                || !vm.hasChanged
                 || Equals(old, vm.ToModel()))
                 return;
-            
-            Store.Store.Instance.ReplacePupil(benchMark.Name, ToModel());
+
+            if (benchMark == null 
+                || Store.Store.Instance.FindByName(benchMark.Name) == null)
+            {
+                Store.Store.Instance.Load(vm.ToModel());
+            }
+            else
+            {
+                Store.Store.Instance.ReplacePupil(benchMark.Name, vm.ToModel());
+            }
         }
 
         #endregion
@@ -130,6 +143,34 @@ namespace Manager.ViewModels
         public void Clear()
         {
             Store.Store.Instance.StoreChanged -= OnStoreChanged;
+        }
+
+        /// <summary>
+        /// Создаёт парное задание для компаньона
+        /// </summary>
+        /// <param name="lesson"></param>
+        private void TryToCreatePartnerLesson(Lesson lesson)
+        {
+            // Можем задать side-task только если мы главные, и есть имя партнёра
+            if (!lesson.IsMain || string.IsNullOrWhiteSpace(lesson?.Partner))
+                return;
+
+            var find = Store.Store.Instance.FindByName(lesson.Partner);
+            if (find == null)
+                return;
+            
+            // навык не трогаем, нам не нужен
+            var parnterLesson = new Lesson
+            {
+                Date = lesson.Date,
+                IsMain = false,
+                LessonType = lesson.LessonType,
+                Name = find.Name,
+                // в данном случа патнер - основной выступающий
+                Partner = lesson.Name
+            };
+            
+            Store.Store.Instance.AddLesson(parnterLesson);
         }
 
         #endregion

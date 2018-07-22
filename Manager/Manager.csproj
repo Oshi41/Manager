@@ -85,19 +85,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Control\SelectiveStackPanel.cs"/>
     <Compile Include="Control\UniformGridPanel.cs"/>
     <Compile Include="Converters\BoolToVisConverter.cs"/>
     <Compile Include="Converters\DescriptionConverter.cs"/>
+    <Compile Include="Converters\IntColorConverter.cs"/>
     <Compile Include="Converters\MathConverter.cs"/>
     <Compile Include="Parsable\Lesson.cs" />
     <Compile Include="Parsable\LessonTypes.cs" />
     <Compile Include="Parsable\Pupil.cs" />
     <Compile Include="Store\Store.cs" />
     <Compile Include="ViewModels\Base\UpdatableViewModelBase.cs" />
+    <Compile Include="ViewModels\DateHeader.cs"/>
     <Compile Include="ViewModels\LessonViewModel.cs" />
     <Compile Include="ViewModels\LoadingViewModel.cs" />
     <Compile Include="ViewModels\PupilViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="ViewModels\WeekItem.cs"/>
     <Compile Include="Views\AddPupilView.xaml.cs">
       <DependentUpon>EditPupilView.xaml</DependentUpon>
     </Compile>
