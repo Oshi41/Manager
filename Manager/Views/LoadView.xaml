@@ -116,7 +116,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
                     Command="{Binding Path=ActionCommand}"
-                    Click="JustClose" />
+                    Click="CloseCurrentWindow" />
         </DockPanel>
     </materialDesign:DialogHost>
 
