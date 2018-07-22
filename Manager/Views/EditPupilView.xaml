@@ -12,7 +12,7 @@
              d:DesignHeight="50"
              d:DesignWidth="150"
              d:DataContext="{d:DesignInstance {x:Type viewModels:PupilViewModel}}"
-             MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight}"
+             MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight, Converter={StaticResource HeightPupilConverter}}"
              MinHeight="210">
     
     <UserControl.Resources>
