@@ -13,7 +13,6 @@ namespace Manager.ViewModels
         private List<LessonViewModel> _lessons;
         private PupilViewModel _pupil;
         private DateTime _date;
-        private LessonViewModel _selectedLessonViewModel;
 
         #endregion
 
@@ -29,16 +28,6 @@ namespace Manager.ViewModels
         {
             get => _lessons;
             set => SetProperty(ref _lessons, value);
-        }
-
-        public LessonViewModel SelectedLessonViewModel
-        {
-            get => _selectedLessonViewModel;
-            set
-            {
-                if (SetProperty(ref _selectedLessonViewModel, value))
-                    Pupil.SelectedLesson = value;
-            }
         }
 
         public PupilViewModel Pupil
@@ -60,12 +49,14 @@ namespace Manager.ViewModels
         {
             Date = date;
             Pupil = new PupilViewModel(pupil.ToModel());
-            Lessons = pupil.Lessons.Where(x => Store.Helper.TheSameWeek(date, x.Date)).ToList();
+            Lessons = pupil
+                      .Lessons
+                      .Where(x => Store
+                                  .Helper
+                                  .TheSameWeek(date, x.Date))
+                      .ToList();
+            
             HasValue = Lessons.Any();
-
-            // Костыль для команд в расписании.
-            // Ссылаемся на команды PupilViewModel
-            Pupil.SelectedLesson = Lessons.FirstOrDefault();
         }
     }
 }

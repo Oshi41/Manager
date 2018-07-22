@@ -35,6 +35,51 @@ namespace Manager
                     
                     new Lesson
                     {
+                        Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 2,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 3,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 4,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 5,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today,
+                        IsMain = true,
+                        Number = 6,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady"
+                    },
+                    
+                    new Lesson
+                    {
                         Date  = DateTime.Today.AddDays(-7 * 2),
                         IsMain = true,
                         Number = 50,
@@ -49,7 +94,7 @@ namespace Manager
                         IsMain = false,
                         LessonType = LessonTypes.Study,
                         Name = "Arkady",
-                        Partner = "Balor1"
+                        Partner = "Balor"
                     },
                     
                     new Lesson
@@ -58,7 +103,18 @@ namespace Manager
                         IsMain = false,
                         LessonType = LessonTypes.Study,
                         Name = "Arkady",
-                        Partner = "Balor2"
+                        Number = 19,
+                        Partner = "Balor"
+                    },
+                    
+                    new Lesson
+                    {
+                        Date  = DateTime.Today.AddDays(-7 * 2),
+                        IsMain = true,
+                        LessonType = LessonTypes.Reading,
+                        Name = "Arkady",
+                        Number = 34,
+                        Partner = "Balor"
                     },
                 }
             };

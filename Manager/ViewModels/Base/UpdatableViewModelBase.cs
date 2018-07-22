@@ -35,7 +35,6 @@ namespace Manager.ViewModels.Base
 
         protected abstract void RefreshOverride(T model);
 
-
         protected override bool SetProperty<T1>(ref T1 storage, T1 value, [CallerMemberName] string propertyName = null)
         {
             var result = base.SetProperty(ref storage, value, propertyName);
@@ -44,6 +43,11 @@ namespace Manager.ViewModels.Base
                 hasChanged = result;
 
             return result;
+        }
+
+        public bool TheSame(T model)
+        {
+            return Equals(model, ToModel());
         }
     }
 }

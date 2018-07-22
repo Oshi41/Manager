@@ -40,24 +40,43 @@ namespace Manager.ViewModels
 
         #region Command Handlers
 
-        private void OnRemoveLesson()
+        private void OnRemoveLesson(LessonViewModel vm)
         {
+            var model = vm.ToModel();
+            
+            // сначала удаляем модель из параметра
+            if (model != null && Lessons.Any(x => x.TheSame(model)))
+            {
+                Store.Store.Instance.RemoveLesson(model);
+                return;
+            }
+            
             if (SelectedLesson == null)
                 return;
 
             Store.Store.Instance.RemoveLesson(SelectedLesson.ToModel());
         }
 
-        private void OnAddEditLesson(DateTime? monday)
+        private void OnAddEditLesson(object parameter)
         {
-            if (SelectedLesson == null && monday.HasValue)
+            // Можем передать модель
+            if (parameter is LessonViewModel vm
+                && Lessons.Any(x => x.TheSame(vm.ToModel())))
             {
-                AddLesson(monday.Value);
-            }
-            else
-            {
+                SelectedLesson = vm;
                 EditLesson();
+                return;
             }
+
+            // либо передаем дату
+            if (SelectedLesson == null && parameter is DateTime time)
+            {
+                AddLesson(time);
+                return;
+            }
+            
+            // в иных случаях запускаем создание нового правила
+            EditLesson();
         }
 
         private async void EditLesson()
@@ -179,8 +198,8 @@ namespace Manager.ViewModels
         {
             Store.Store.Instance.StoreChanged += OnStoreChanged;
 
-            RemoveLessonCommand = new DelegateCommand(OnRemoveLesson, () => SelectedLesson != null);
-            AddEditLessonCommand = new DelegateCommand<DateTime?>(OnAddEditLesson);
+            RemoveLessonCommand = new DelegateCommand<LessonViewModel>(OnRemoveLesson, (lesson) => lesson != null || SelectedLesson != null);
+            AddEditLessonCommand = new DelegateCommand<object>(OnAddEditLesson);
             DeletePupilCommand = new DelegateCommand(OnDeletePupil);
             ChangePupilCommand = new DelegateCommand(OnChangePupil);
             RefreshCommand = new DelegateCommand(() => OnStoreChanged(null, EventArgs.Empty));

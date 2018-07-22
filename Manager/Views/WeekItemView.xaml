@@ -10,6 +10,7 @@
              xmlns:converters="clr-namespace:Manager.Converters"
              xmlns:converters1="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
              xmlns:control="clr-namespace:Manager.Control"
+             xmlns:behaviors="clr-namespace:Manager.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="320"
@@ -21,6 +22,10 @@
         <converters:MathConverter x:Key="MathConverter"
                                   Multiply="{Binding Path=Lessons.Count}"/>
         
+        <converters:NotNullChooseConverter x:Key="NotNullChooseConverter"/>
+        
+        <converters:MoreThanToVisConverter x:Key="MoreThanToVisConverter"/>
+        
 
     </UserControl.Resources>
 
@@ -30,13 +35,6 @@
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch"
                          Margin="0 0 1 1">
-
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="MouseDoubleClick">
-                <i:InvokeCommandAction Command="{Binding Pupil.AddEditLessonCommand}"
-                                       CommandParameter="{Binding Path=Date}" />
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
 
         <materialDesign:Card.Style>
             <Style TargetType="{x:Type materialDesign:Card}">
@@ -60,26 +58,52 @@
                                     <ListView ItemsSource="{Binding Path=Lessons}"
                                               MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:Card}, Path=ActualHeight}"
                                               MaxWidth="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:Card}, Path=ActualWidth}"
-                                              SelectedValue="{Binding Path=SelectedLessonViewModel}"
-                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                              ItemContainerStyleSelector="{x:Null}">
+                                              ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                         <ListView.ItemTemplate>
                                             <DataTemplate DataType="{x:Type viewModels:LessonViewModel}">
                                                 <Grid VerticalAlignment="Stretch"
-                                                      HorizontalAlignment="Stretch">
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent">
 
                                                     <TextBlock Text="{Binding Number, TargetNullValue=-}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
                                                                FontSize="20" />
+                                                    
+                                                    <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Top"
+                                                            Margin="0 -10 -10 0"
+                                                            Height="14"
+                                                            Width="14"
+                                                            CommandParameter="{Binding}"
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.Pupil.RemoveLessonCommand}">
+                                                        <Viewbox>
+                                                            <materialDesign:PackIcon Kind="Close"
+                                                                                     Background="DarkRed" />
+                                                        </Viewbox>
+                                                    </Button>
+                                               
+                                                    <i:Interaction.Behaviors>
+                                                        <behaviors:TwoParamsDoubleClickBehavior
+                                                            FirstParameter="{Binding}"
+                                                            SecondParameter="{Binding Path=Date}"
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.Pupil.AddEditLessonCommand}"/>
+                                                        
+                                                    </i:Interaction.Behaviors>
                                                 </Grid>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
 
                                         <ListView.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Vertical"/>
+                                                <StackPanel Orientation="Vertical">
+                                                    <i:Interaction.Behaviors>
+                                                        <behaviors:BubbleScrollEvent />
+                                                    </i:Interaction.Behaviors>
+
+                                                    </StackPanel>
                                             </ItemsPanelTemplate>
                                         </ListView.ItemsPanel>
                                     
@@ -87,23 +111,30 @@
                                             <Style TargetType="{x:Type ListViewItem}"
                                                    BasedOn="{StaticResource {x:Type ListViewItem}}">
                                                 <Setter Property="Padding" Value="10"/>
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                <Setter Property="VerticalAlignment" Value="Stretch"/>
                                             </Style>
                                                 
                                         </ListView.ItemContainerStyle>
                                     
                                     </ListView>
 
-                                    <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Top"
-                                            Height="14"
-                                            Width="14"
-                                            Command="{Binding Pupil.RemoveLessonCommand}">
-                                        <Viewbox>
-                                            <materialDesign:PackIcon Kind="Close"
-                                                                     Background="DarkRed" />
-                                        </Viewbox>
-                                    </Button>
+                                    
+                                
+                                    <TextBlock HorizontalAlignment="Right"
+                                               VerticalAlignment="Bottom">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                   BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                <Setter Property="Text" Value="{Binding Path=Lessons.Count, StringFormat={}({0})}"/>
+                                                <Setter Property="Margin" Value="2"/>
+                                                <Setter Property="Visibility" Value="{Binding Path=Lessons.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=1}"/>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </Grid>
                             </Setter.Value>
                         </Setter>
