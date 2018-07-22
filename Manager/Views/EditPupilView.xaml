@@ -124,6 +124,7 @@
 
             <Button Content="Готово"
                     Margin="10"
+                    IsDefault="True"
                     Command="materialDesign:DialogHost.CloseDialogCommand"
                     CommandParameter="{StaticResource TrueParameter}" />
 

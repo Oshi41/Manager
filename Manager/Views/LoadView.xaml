@@ -6,83 +6,109 @@
              xmlns:local="clr-namespace:Manager.Views"
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:Manager.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="400"
              d:DesignWidth="320"
              d:DataContext="{d:DesignInstance {x:Type viewModels:LoadingViewModel}}">
 
-    <DockPanel Dock="Top">
-        <TextBlock FontSize="20"
-                   DockPanel.Dock="Top"
-                   HorizontalAlignment="Center">
-            <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}"
-                       BasedOn="{StaticResource {x:Type TextBlock}}">
-                    <Setter Property="Text"
-                            Value="Сохранение данных" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=IsLoadFromFile}"
-                                     Value="True">
-                            <Setter Property="Text"
-                                    Value="Загрузка данных" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
+    <materialDesign:DialogHost IsOpen="True">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Orientation="Vertical">
+                <Button Content="Открыть из файла"
+                        ToolTip="Выберите файл, созданный ранее, и загрузите список учеников."
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        Margin="20"/>
+                
+                <Button Content="Начать работу"          
+                        ToolTip="Если используете программу впервые, выбирайте этот вариант."
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        Margin="20"
+                        Click="CloseCurrentWindow"/>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+        
+        <DockPanel Dock="Top">
+            <TextBlock FontSize="20"
+                       DockPanel.Dock="Top"
+                       HorizontalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}"
+                           BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Text"
+                                Value="Сохранение данных" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsLoadFromFile}"
+                                         Value="True">
+                                <Setter Property="Text"
+                                        Value="Загрузка данных" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-        <DockPanel DockPanel.Dock="Top">
-            <Button DockPanel.Dock="Right"
-                    Content="..."
-                    Command="{Binding Path=SelectFilePathCommand}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding Path=FilePath}"
-                     materialDesign:HintAssist.Hint="Путь к файлу"
-                     materialDesign:HintAssist.IsFloating="True" />
+            <DockPanel DockPanel.Dock="Top">
+                <Button DockPanel.Dock="Right"
+                        Content="..."
+                        Command="{Binding Path=SelectFilePathCommand}" />
+                <TextBox IsReadOnly="True"
+                         Text="{Binding Path=FilePath}"
+                         materialDesign:HintAssist.Hint="Путь к файлу"
+                         materialDesign:HintAssist.IsFloating="True" />
 
-        </DockPanel>
-
-        <GroupBox DockPanel.Dock="Top"
-                  Style="{StaticResource MaterialDesignGroupBox}"
-                  Margin="0 15 0 0">
-            <GroupBox.Header>
-                <CheckBox Content="Использовать шифрование"
-                          Style="{StaticResource MaterialDesignAccentCheckBox}"
-                          ToolTip="Можно выбрать сразу несколько параметров."
-                          IsChecked="{Binding Path=NoEncr}" />
-            </GroupBox.Header>
-            <DockPanel IsEnabled="{Binding Path=NoEncr}">
-                <CheckBox DockPanel.Dock="Top"
-                          IsChecked="{Binding Path=UseBase64}"
-                          Content="Преобразовать в байты"
-                          ToolTip="Преобразует понятный человеку текст в подобие машинного. Лёгкое решение, но ненадёжное." />
-
-                <CheckBox DockPanel.Dock="Top"
-                          Margin="0 5"
-                          IsChecked="{Binding Path=UsePassword}"
-                          Content="Шифровать с паролем"
-                          ToolTip="Шифрует текст с помощью ключа. Максимальная надёжность, взлом возможен лишь подбором." />
-
-                <PasswordBox DockPanel.Dock="Top"
-                             Margin="20 0 0 0"
-                             Width="150"
-                             HorizontalAlignment="Left"
-                             IsEnabled="{Binding Path=UsePassword}"
-                             MaxLength="16" />
-
-                <CheckBox DockPanel.Dock="Top"
-                          IsChecked="{Binding Path=UseForMachine}"
-                          Content="Уникальный шифр для машины"
-                          ToolTip="Шифрует текст с помощью ключа, уникального для этой машины. Лёгкое решение, но при смене операционной системы, ключ будет навсегда утерян" />
             </DockPanel>
-        </GroupBox>
 
+            <GroupBox DockPanel.Dock="Top"
+                      Style="{StaticResource MaterialDesignGroupBox}"
+                      Margin="0 15 0 0">
+                <GroupBox.Header>
+                    <CheckBox Content="Использовать шифрование"
+                              Style="{StaticResource MaterialDesignAccentCheckBox}"
+                              ToolTip="Можно выбрать сразу несколько параметров."
+                              IsChecked="{Binding Path=NoEncr}" />
+                </GroupBox.Header>
+                <DockPanel IsEnabled="{Binding Path=NoEncr}">
+                    <CheckBox DockPanel.Dock="Top"
+                              IsChecked="{Binding Path=UseBase64}"
+                              Content="Преобразовать в байты"
+                              ToolTip="Преобразует понятный человеку текст в подобие машинного. Лёгкое решение, но ненадёжное." />
 
-        <Button Content="Продолжить"
-                Margin="20"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Command="{Binding Path=ActionCommand}" />
-    </DockPanel>
+                    <CheckBox DockPanel.Dock="Top"
+                              Margin="0 5"
+                              IsChecked="{Binding Path=UsePassword}"
+                              Content="Шифровать с паролем"
+                              ToolTip="Шифрует текст с помощью ключа. Максимальная надёжность, взлом возможен лишь подбором." />
+
+                    <PasswordBox DockPanel.Dock="Top"
+                                 Margin="20 0 0 0"
+                                 Width="150"
+                                 HorizontalAlignment="Left"
+                                 IsEnabled="{Binding Path=UsePassword}"
+                                 MaxLength="16"
+                                 ToolTip="Длина пароля от 4 до 16 символов">
+                        
+                        <i:Interaction.Behaviors>
+                            <behaviors:PasswordBindBehavior Password="{Binding Password}"/>
+                        </i:Interaction.Behaviors>
+                        
+                        </PasswordBox>
+
+                    <CheckBox DockPanel.Dock="Top"
+                              IsChecked="{Binding Path=UseForMachine}"
+                              Content="Уникальный шифр для машины"
+                              ToolTip="Шифрует текст с помощью ключа, уникального для этой машины. Лёгкое решение, но при смене операционной системы, ключ будет навсегда утерян." />
+                </DockPanel>
+            </GroupBox>
+
+            <Button Content="Продолжить"
+                    Margin="20"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding Path=ActionCommand}" />
+        </DockPanel>
+    </materialDesign:DialogHost>
 
 </UserControl>

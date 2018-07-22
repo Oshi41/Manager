@@ -20,16 +20,21 @@
     </Window.Resources>
 
     <Grid>
-        <materialDesign:DialogHost Identifier="Main">
-
-            <materialDesign:DialogHost.DialogContent>
-                <views:EditPupilView Loaded="FrameworkElement_OnLoaded" />
-            </materialDesign:DialogHost.DialogContent>
-
-            <views:ScheduleView x:Name="ScheduleView"
-                                Loaded="ScheduleView_OnLoaded" />
-
-        </materialDesign:DialogHost>
+        <!-- <views:LoadView Margin="5"/> -->
+        
+        <views:ScheduleView Margin="5"
+                            Loaded="ScheduleView_OnLoaded"/>
+        
+        <!-- <materialDesign:DialogHost Identifier="Main"> -->
+        <!-- -->
+        <!--     <materialDesign:DialogHost.DialogContent> -->
+        <!--         <views:EditPupilView Loaded="FrameworkElement_OnLoaded" /> -->
+        <!--     </materialDesign:DialogHost.DialogContent> -->
+        <!-- -->
+        <!--     <views:ScheduleView x:Name="ScheduleView" -->
+        <!--                         Loaded="ScheduleView_OnLoaded" /> -->
+        <!-- -->
+        <!-- </materialDesign:DialogHost> -->
     </Grid>
     
 </Window>

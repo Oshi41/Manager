@@ -24,6 +24,8 @@
                                   x:Key="MathConverter" />
         
         <converters1:IntColorConverter x:Key="IntColorConverter"/>
+        
+        <converters1:MoreThanToVisConverter x:Key="MoreThanToVisConverter"/>
 
 
         <DataTemplate DataType="{x:Type viewModels:WeekItem}">
@@ -74,7 +76,9 @@
                               Grid.Row="0"
                               ItemsSource="{Binding Path=Dates}"
                               VerticalAlignment="Bottom"
-                              HorizontalAlignment="Left">
+                              HorizontalAlignment="Left"
+                              Width="{Binding ElementName=Table, Path=ActualWidth}"
+                              Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Center"
@@ -174,7 +178,8 @@
                       Margin="0 5 0 0"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Left"
-                      Width="{Binding ElementName=Table, Path=ActualWidth}">
+                      Width="{Binding ElementName=Table, Path=ActualWidth}"
+                      Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
 
                     <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
                             Command="{Binding MovePrevCommand}"

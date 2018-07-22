@@ -5,14 +5,14 @@ using System.Windows.Interactivity;
 
 namespace Manager.Behaviors
 {
-    public class TwoParamsDoubleClickBehavior : Behavior<Grid>
+    public class TwoParamsDoubleClickBehavior : Behavior<UIElement>
     {
         public static readonly DependencyProperty FirstParameterProperty = DependencyProperty.Register(
                                                         "FirstParameter", typeof(object), typeof(TwoParamsDoubleClickBehavior), new PropertyMetadata(default(object)));
 
         public object FirstParameter
         {
-            get { return (object) GetValue(FirstParameterProperty); }
+            get { return GetValue(FirstParameterProperty); }
             set { SetValue(FirstParameterProperty, value); }
         }
 
@@ -22,7 +22,7 @@ namespace Manager.Behaviors
 
         public object SecondParameter
         {
-            get { return (object) GetValue(SecondParameterProperty); }
+            get { return GetValue(SecondParameterProperty); }
             set { SetValue(SecondParameterProperty, value); }
         }
 
@@ -34,6 +34,15 @@ namespace Manager.Behaviors
         {
             get { return (ICommand) GetValue(CommandProperty); }
             set { SetValue(CommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty ConditionProperty = DependencyProperty.Register(
+                                                        "Condition", typeof(bool), typeof(TwoParamsDoubleClickBehavior), new PropertyMetadata(true));
+
+        public bool Condition
+        {
+            get { return (bool) GetValue(ConditionProperty); }
+            set { SetValue(ConditionProperty, value); }
         }
         
         protected override void OnAttached()
@@ -53,7 +62,7 @@ namespace Manager.Behaviors
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount > 1)
+            if (e.ClickCount > 1 && Condition)
             {
                 var param = FirstParameter ?? SecondParameter;
                 Command?.Execute(param);

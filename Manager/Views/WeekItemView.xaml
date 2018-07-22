@@ -25,7 +25,8 @@
         <converters:NotNullChooseConverter x:Key="NotNullChooseConverter"/>
         
         <converters:MoreThanToVisConverter x:Key="MoreThanToVisConverter"/>
-        
+
+        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
 
     </UserControl.Resources>
 
@@ -35,6 +36,13 @@
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch"
                          Margin="0 0 1 1">
+        
+        <i:Interaction.Behaviors>
+            <behaviors:TwoParamsDoubleClickBehavior
+                FirstParameter="{Binding Path=Date}"
+                Condition="{Binding HasValue, Converter={StaticResource InvertBoolConverter}}"
+                Command="{Binding Path=Pupil.AddEditLessonCommand}"/>
+        </i:Interaction.Behaviors>
 
         <materialDesign:Card.Style>
             <Style TargetType="{x:Type materialDesign:Card}">
@@ -90,7 +98,6 @@
                                                             FirstParameter="{Binding}"
                                                             SecondParameter="{Binding Path=Date}"
                                                             Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.Pupil.AddEditLessonCommand}"/>
-                                                        
                                                     </i:Interaction.Behaviors>
                                                 </Grid>
                                             </DataTemplate>
@@ -116,12 +123,9 @@
                                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                                 <Setter Property="VerticalAlignment" Value="Stretch"/>
                                             </Style>
-                                                
                                         </ListView.ItemContainerStyle>
                                     
                                     </ListView>
-
-                                    
                                 
                                     <TextBlock HorizontalAlignment="Right"
                                                VerticalAlignment="Bottom">
