@@ -8,19 +8,20 @@ namespace Manager.Converters
     public class MathConverter : DependencyObject, IValueConverter
     {
         public static readonly DependencyProperty MultiplyProperty = DependencyProperty.Register(
-                                                        "Multiply", typeof(int), typeof(MathConverter), new PropertyMetadata(1));
+                                                        "Multiply", typeof(object), typeof(MathConverter), new PropertyMetadata(1));
 
-        public int Multiply
+        public object Multiply
         {
-            get { return (int) GetValue(MultiplyProperty); }
+            get { return (object) GetValue(MultiplyProperty); }
             set { SetValue(MultiplyProperty, value); }
         }
         
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (double.TryParse(value?.ToString(), out var val))
+            if (double.TryParse(value?.ToString(), out var val)
+                && double.TryParse(Multiply?.ToString(), out var param))
             {
-                return val * Multiply;
+                return val * param;
             }
 
             return Binding.DoNothing;

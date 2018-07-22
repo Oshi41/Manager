@@ -73,7 +73,8 @@
                 <ItemsControl Grid.Column="1"
                               Grid.Row="0"
                               ItemsSource="{Binding Path=Dates}"
-                              VerticalAlignment="Bottom">
+                              VerticalAlignment="Bottom"
+                              HorizontalAlignment="Left">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Center"
@@ -108,7 +109,8 @@
                 <ItemsControl Grid.Column="0"
                               Grid.Row="1"
                               ItemsSource="{Binding Pupils}"
-                              VerticalAlignment="Top">
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Left">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Rows="{Binding Pupils.Count}"
@@ -152,7 +154,8 @@
                               Grid.Row="1"
                               ItemsSource="{Binding Items}"
                               x:Name="Table"
-                              VerticalAlignment="Top">
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Left">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <control:UniformGridPanel Rows="{Binding Path=Pupils.Count}"
@@ -170,7 +173,8 @@
                       Grid.Row="2"
                       Margin="0 5 0 0"
                       VerticalAlignment="Top"
-                      HorizontalAlignment="Stretch">
+                      HorizontalAlignment="Left"
+                      Width="{Binding ElementName=Table, Path=ActualWidth}">
 
                     <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
                             Command="{Binding MovePrevCommand}"

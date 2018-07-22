@@ -5,6 +5,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:Manager.ViewModels"
              xmlns:views="clr-namespace:Manager.Views"
+             xmlns:converters="clr-namespace:Manager.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -32,6 +33,10 @@
             <DataTemplate DataType="{x:Type viewModels:PupilViewModel}">
                 <views:EditPupilView />
             </DataTemplate>
+            
+            <!-- Конвертер высоты для редактирования ученика -->
+            <converters:MathConverter x:Key="HeightPupilConverter"
+                                      Multiply="0.75"/>
 
         </ResourceDictionary>
     </Application.Resources>
