@@ -64,7 +64,7 @@ namespace Manager.ViewModels
             set => SetProperty(ref _loadFromFile, value);
         }
 
-        public bool WasLoaded { get; set; }
+        public bool HasError { get; set; }
 
         #endregion
 
@@ -142,13 +142,11 @@ namespace Manager.ViewModels
 
                     var pupils = JsonConvert.DeserializeObject<List<Pupil>>(json);
                     Store.Store.Instance.Load(pupils);
-
-                    WasLoaded = true;
                 }
             }
             catch
             {
-
+                HasError = true;
             }
         }
 
@@ -166,12 +164,10 @@ namespace Manager.ViewModels
                 json = _model.Encrypt(type, json, Password);
 
                 File.WriteAllText(FilePath, json);
-
-                WasLoaded = true;
             }
             catch
             {
-
+                HasError = true;
             }
 
         }

@@ -115,27 +115,13 @@
     <Compile Include="ViewModels\PupilViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\WeekItem.cs"/>
-    <Compile Include="Views\AddPupilView.xaml.cs">
-      <DependentUpon>EditPupilView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditLessonView.xaml.cs">
-      <DependentUpon>EditLessonView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LoadView.xaml.cs">
-      <DependentUpon>LoadView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ScheduleView.xaml.cs">
-      <DependentUpon>ScheduleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WeekItemView.xaml.cs">
-      <DependentUpon>WeekItemView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\AppWindow.xaml.cs">
-      <DependentUpon>AppWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\StartWindow.xaml.cs">
-      <DependentUpon>StartWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Views\EditLessonView.xaml.cs"/>
+    <Compile Include="Views\EditPupilView.xaml.cs"/>
+    <Compile Include="Views\LoadView.xaml.cs"/>
+    <Compile Include="Views\ScheduleView.xaml.cs"/>
+    <Compile Include="Views\WeekItemView.xaml.cs"/>
+    <Compile Include="Windows\AppWindow.xaml.cs"/>
+    <Compile Include="Windows\StartWindow.xaml.cs"/>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -66,7 +66,7 @@ namespace Manager
 
             // загрузили, что-то отредактировали и готовы сохранить
             if (true.Equals(result)
-                || vm.WasLoaded
+                || vm.HasError
                 || AfterLoading())
             {
                 if (OnSaving())
@@ -117,7 +117,7 @@ namespace Manager
 
             var result = window.ShowDialog();
 
-            return result == true || vm.WasLoaded;
+            return result == true || vm.HasError;
         }
     }
 }
