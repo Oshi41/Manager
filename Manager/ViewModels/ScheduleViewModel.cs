@@ -53,6 +53,8 @@ namespace Manager.ViewModels
                     val++;
 
                 SetProperty(ref _weeksCount, val);
+                
+                RefreshFromStore(DateTime.Today);
             }
         }
 

@@ -88,6 +88,7 @@
     </ApplicationDefinition>
     <Compile Include="Behaviors\BubbleScrollBehavior.cs"/>
     <Compile Include="Behaviors\DoubliClickBehavior.cs"/>
+    <Compile Include="Behaviors\DragEndedBehavior.cs"/>
     <Compile Include="Behaviors\PasswordBindBehavior.cs"/>
     <Compile Include="Behaviors\TwoParamsDoubleClickBehavior.cs"/>
     <Compile Include="Control\SelectiveStackPanel.cs"/>
