@@ -144,6 +144,7 @@
                                           HorizontalAlignment="Right"
                                           VerticalAlignment="Center"
                                           DockPanel.Dock="Right"
+                                          Margin="0 -3 0 0"
                                           ToolTip="Поиск по именам. Введите Enter, чтобы найти ученика, Escape, чтобы сбросить поиск."
                                           Height="{Binding ElementName=SearchBox, Path=ActualHeight}"
                                           Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
