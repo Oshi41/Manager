@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Manager.Helper;
-using WeakEvents;
+using WeakEvent;
 
 namespace Manager.Store
 {
-    [ImplementWeakEvents]
     public class Store
     {
         #region Singletone
@@ -27,14 +26,21 @@ namespace Manager.Store
         #endregion
 
         #region Event
+        
+        private readonly WeakEventSource<EventArgs> _myEventSource = new WeakEventSource<EventArgs>();
 
         /// <summary>
         /// Событие изменения списка
         /// </summary>
-        public event EventHandler StoreChanged;
+        public event EventHandler<EventArgs> StoreChanged
+        {
+            add => _myEventSource.Subscribe(value);
+            remove => _myEventSource.Unsubscribe(value);
+        }
+        
         private void RiseEvent(object o = null)
         {
-            StoreChanged?.Invoke(o, EventArgs.Empty);
+            _myEventSource.Raise(o, EventArgs.Empty);
         }
 
         #endregion
