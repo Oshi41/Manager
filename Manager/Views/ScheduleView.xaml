@@ -39,229 +39,304 @@
 
     <materialDesign:DialogHost Identifier="LessonHost">
         <materialDesign:DialogHost Identifier="PupilHost">
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Hidden">
-                <Grid Margin="10 10 10 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"
-                                          MinWidth="150" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+            <Grid Margin="10 10 10 0"
+                  MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Hidden">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"
+                                              x:Name="LeftColumn"
+                                              MinWidth="150"
+                                              MaxWidth="220" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Верхняя левая панел -->
-                    <DockPanel>
-                        <Button DockPanel.Dock="Left"
-                                Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                                Width="32"
-                                Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}"
-                                Margin="5 5 0 0"
-                                ToolTip="Добавить ученика"
-                                Command="{Binding Path=AddPupil}">
-                            <Button.Content>
-                                <Viewbox>
-                                    <materialDesign:PackIcon Kind="Plus"
-                                                             Foreground="{DynamicResource SecondaryAccentBrush}" />
-                                </Viewbox>
-                            </Button.Content>
-                        </Button>
-                    </DockPanel>
-
-                    <!-- Заголовки даты -->
-                    <Grid Grid.Column="1"
-                          Grid.Row="0"
-                          VerticalAlignment="Top">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Slider Minimum="9"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                Maximum="27"
-                                IsSnapToTickEnabled="True"
-                                TickFrequency="2"
-                                TickPlacement="BottomRight"
-                                Width="{Binding ElementName=Table, Path=ActualWidth}"
-                                AutoToolTipPlacement="BottomRight">
+                        <!-- Верхняя левая панель -->
+                        <Grid MaxWidth="220">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                            <i:Interaction.Behaviors>
-                                <behaviors:DragEndedBehavior Value="{Binding WeeksCount, Mode=TwoWay}" />
-                            </i:Interaction.Behaviors>
+                            <!-- Добавить ученика -->
+                            <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Width="32"
+                                    Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}"
+                                    ToolTip="Добавить ученика"
+                                    Command="{Binding Path=AddPupil}">
+                                <Button.Content>
+                                    <Viewbox>
+                                        <materialDesign:PackIcon Kind="Plus"
+                                                                 Foreground="{DynamicResource SecondaryAccentBrush}" />
+                                    </Viewbox>
+                                </Button.Content>
+                            </Button>
 
-                        </Slider>
+                            <!-- Строка поиска -->
+                            <TextBox Grid.Column="1"
+                                     x:Name="SearchBox"
+                                     Margin="5 0 0 0"
+                                     Text="{Binding Filter.SearchString, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}"
+                                           BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Setter Property="RenderTransform">
+                                            <Setter.Value>
+                                                <ScaleTransform ScaleX="0" ScaleY="1" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Filter.IsEnabled}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                                                To="1"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
 
-                        <ItemsControl Grid.Row="1"
-                                      ItemsSource="{Binding Path=Dates}"
-                                      VerticalAlignment="Bottom"
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                                                To="0"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter"
+                                                Command="{Binding Filter.SearchCommand}" />
+                                    
+                                    <KeyBinding Key="Escape" 
+                                                Command="{Binding Filter.ClearCommand}" />
+                                </TextBox.InputBindings>
+
+                            </TextBox>
+
+                            <ToggleButton Grid.Column="2"
+                                          Style="{DynamicResource MaterialDesignHamburgerToggleButton}"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          DockPanel.Dock="Right"
+                                          ToolTip="Поиск по именам. Введите Enter, чтобы найти ученика, Escape, чтобы сбросить поиск."
+                                          Height="{Binding ElementName=SearchBox, Path=ActualHeight}"
+                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                          IsChecked="{Binding Filter.IsEnabled}" />
+
+                        </Grid>
+
+                        <!-- Заголовки даты -->
+                        <Grid Grid.Column="1"
+                              Grid.Row="0"
+                              VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Slider Minimum="9"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Maximum="27"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="2"
+                                    TickPlacement="BottomRight"
+                                    Width="{Binding ElementName=Table, Path=ActualWidth}"
+                                    AutoToolTipPlacement="BottomRight">
+
+                                <i:Interaction.Behaviors>
+                                    <behaviors:DragEndedBehavior Value="{Binding WeeksCount, Mode=TwoWay}" />
+                                </i:Interaction.Behaviors>
+
+                            </Slider>
+
+                            <ItemsControl Grid.Row="1"
+                                          ItemsSource="{Binding Path=Dates}"
+                                          VerticalAlignment="Bottom"
+                                          HorizontalAlignment="Left"
+                                          Width="{Binding ElementName=Table, Path=ActualWidth}"
+                                          Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Path=DateTime, StringFormat={}{0:dd.MM.yy}}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}"
+                                                       BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                    <Setter Property="Foreground"
+                                                            Value="{Binding Path=DateTime.Month, Converter={StaticResource IntColorConverter}}" />
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=IsPresentWeek}"
+                                                                     Value="True">
+                                                            <Setter Property="FontWeight"
+                                                                    Value="Bold" />
+                                                            <Setter Property="TextDecorations"
+                                                                    Value="Underline" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="{Binding Path=Dates.Count}"
+                                                     MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+
+                        <!-- Список учеников -->
+                        <ItemsControl Grid.Column="0"
+                                      Grid.Row="1"
+                                      ItemsSource="{Binding Pupils}"
+                                      VerticalAlignment="Top"
                                       HorizontalAlignment="Left"
-                                      Width="{Binding ElementName=Table, Path=ActualWidth}"
-                                      Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               Text="{Binding Path=DateTime, StringFormat={}{0:dd.MM.yy}}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="{x:Type TextBlock}"
-                                                   BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                <Setter Property="Foreground"
-                                                        Value="{Binding Path=DateTime.Month, Converter={StaticResource IntColorConverter}}" />
-
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=IsPresentWeek}"
-                                                                 Value="True">
-                                                        <Setter Property="FontWeight"
-                                                                Value="Bold" />
-                                                        <Setter Property="TextDecorations"
-                                                                Value="Underline" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-
+                                      x:Name="PupilsControl">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid Columns="{Binding Path=Dates.Count}"
-                                                  MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
+                                    <UniformGrid Rows="{Binding Pupils.Count}"
+                                                 Height="{Binding ElementName=Table, Path=ActualHeight}"
+                                                 MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type viewModels:PupilViewModel}">
+                                    <DockPanel>
+                                        <TextBox Text="{Binding Path=Name}"
+                                                 DockPanel.Dock="Left"
+                                                 VerticalAlignment="Center"
+                                                 HorizontalAlignment="Left"
+                                                 IsReadOnly="True"
+                                                 MinWidth="120"
+                                                 Margin="0 0 5 0" />
+
+                                        <Button DockPanel.Dock="Left"
+                                                Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Width="16"
+                                                ToolTip="Редактировать запись ученика"
+                                                Command="{Binding Path=ChangePupilCommand}"
+                                                Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}">
+                                            <Button.Content>
+                                                <Viewbox>
+                                                    <materialDesign:PackIcon Kind="Pencil"
+                                                                             Foreground="{DynamicResource SecondaryAccentBrush}" />
+                                                </Viewbox>
+                                            </Button.Content>
+                                        </Button>
+
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
+                        <!-- Расписание -->
+                        <ItemsControl Grid.Column="1"
+                                      Grid.Row="1"
+                                      ItemsSource="{Binding Items}"
+                                      x:Name="Table"
+                                      VerticalAlignment="Top"
+                                      HorizontalAlignment="Left">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <control:UniformGridPanel Rows="{Binding Path=Pupils.Count}"
+                                                              Orientation="Vertical"
+                                                              IsVirtualizing="True"
+                                                              VirtualizationMode="Recycling"
+                                                              Columns="{Binding Path=WeeksCount}"
+                                                              MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}"
+                                                              MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                        </ItemsControl>
+
+                        <!-- Панель перемотки -->
+                        <Grid Grid.Column="1"
+                              Grid.Row="2"
+                              Margin="0 5 0 0"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Left"
+                              Width="{Binding ElementName=Table, Path=ActualWidth}"
+                              Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
+
+                            <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                    Command="{Binding MovePrevCommand}"
+                                    DockPanel.Dock="Left"
+                                    HorizontalAlignment="Left"
+                                    Width="24"
+                                    Height="24">
+                                <Viewbox>
+                                    <materialDesign:PackIcon Kind="ChevronDoubleLeft" />
+                                </Viewbox>
+                            </Button>
+
+                            <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                    Command="{Binding RefreshCommand}"
+                                    HorizontalAlignment="Center"
+                                    Width="24"
+                                    Height="24"
+                                    ToolTip="Вернуться к сегодняшней неделе">
+                                <Viewbox>
+                                    <materialDesign:PackIcon Kind="CalendarToday" />
+                                </Viewbox>
+                            </Button>
+
+                            <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                    Command="{Binding MoveNextCommand}"
+                                    DockPanel.Dock="Right"
+                                    HorizontalAlignment="Right"
+                                    Width="24"
+                                    Height="24">
+                                <Viewbox>
+                                    <materialDesign:PackIcon Kind="ChevronDoubleRight" />
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+
                     </Grid>
+                </ScrollViewer>
 
-
-                    <!-- Список учеников -->
-                    <ItemsControl Grid.Column="0"
-                                  Grid.Row="1"
-                                  ItemsSource="{Binding Pupils}"
-                                  VerticalAlignment="Top"
-                                  HorizontalAlignment="Left">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="{Binding Pupils.Count}"
-                                             Height="{Binding ElementName=Table, Path=ActualHeight}"
-                                             MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:PupilViewModel}">
-                                <DockPanel>
-                                    <TextBox Text="{Binding Path=Name}"
-                                             DockPanel.Dock="Left"
-                                             VerticalAlignment="Center"
-                                             HorizontalAlignment="Left"
-                                             IsReadOnly="True"
-                                             MinWidth="120"
-                                             Margin="0 0 5 0" />
-
-                                    <Button DockPanel.Dock="Left"
-                                            Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Center"
-                                            Width="16"
-                                            ToolTip="Редактировать запись ученика"
-                                            Command="{Binding Path=ChangePupilCommand}"
-                                            Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}">
-                                        <Button.Content>
-                                            <Viewbox>
-                                                <materialDesign:PackIcon Kind="Pencil"
-                                                                         Foreground="{DynamicResource SecondaryAccentBrush}" />
-                                            </Viewbox>
-                                        </Button.Content>
-                                    </Button>
-
-                                </DockPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-
-                    <!-- Расписание -->
-                    <ItemsControl Grid.Column="1"
-                                  Grid.Row="1"
-                                  ItemsSource="{Binding Items}"
-                                  x:Name="Table"
-                                  VerticalAlignment="Top"
-                                  HorizontalAlignment="Left">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <control:UniformGridPanel Rows="{Binding Path=Pupils.Count}"
-                                                          Orientation="Vertical"
-                                                          IsVirtualizing="True"
-                                                          VirtualizationMode="Recycling"
-                                                          Columns="{Binding Path=WeeksCount}"
-                                                          MaxHeight="{Binding Pupils.Count, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}"
-                                                          MaxWidth="{Binding WeeksCount, Converter={StaticResource MathConverter}, ConverterParameter={StaticResource MaxItemHeight}}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-
-                    </ItemsControl>
-
-                    <!-- Панель перемотки -->
-                    <Grid Grid.Column="1"
-                          Grid.Row="2"
-                          Margin="0 5 0 0"
-                          VerticalAlignment="Top"
-                          HorizontalAlignment="Left"
-                          Width="{Binding ElementName=Table, Path=ActualWidth}"
-                          Visibility="{Binding Items.Count, Converter={StaticResource MoreThanToVisConverter}, ConverterParameter=0}">
-
-                        <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                Command="{Binding MovePrevCommand}"
-                                DockPanel.Dock="Left"
-                                HorizontalAlignment="Left"
-                                Width="24"
-                                Height="24">
-                            <Viewbox>
-                                <materialDesign:PackIcon Kind="ChevronDoubleLeft" />
-                            </Viewbox>
-                        </Button>
-
-                        <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                Command="{Binding RefreshCommand}"
-                                HorizontalAlignment="Center"
-                                Width="24"
-                                Height="24"
-                                ToolTip="Вернуться к сегодняшней неделе">
-                            <Viewbox>
-                                <materialDesign:PackIcon Kind="CalendarToday" />
-                            </Viewbox>
-                        </Button>
-
-                        <Button Style="{DynamicResource MaterialDesignFloatingActionButton}"
-                                Command="{Binding MoveNextCommand}"
-                                DockPanel.Dock="Right"
-                                HorizontalAlignment="Right"
-                                Width="24"
-                                Height="24">
-                            <Viewbox>
-                                <materialDesign:PackIcon Kind="ChevronDoubleRight" />
-                            </Viewbox>
-                        </Button>
-                    </Grid>
-
-                    <Grid Grid.Row="3"
-                          Grid.ColumnSpan="2"
-                          VerticalAlignment="Bottom">
-                        <Button Content="Сохранить"
-                                Margin="10"
-                                Click="OnClose" />
-                    </Grid>
-                </Grid>
-            </ScrollViewer>
-
-
+                <Button Content="Сохранить"
+                        Grid.Row="1"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Stretch"
+                        Margin="10"
+                        Click="OnClose" />
+            </Grid>
         </materialDesign:DialogHost>
     </materialDesign:DialogHost>
 

@@ -114,6 +114,7 @@
     <Compile Include="ViewModels\LoadingViewModel.cs" />
     <Compile Include="ViewModels\PupilViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="ViewModels\StringFilter.cs"/>
     <Compile Include="ViewModels\WeekItem.cs"/>
     <Compile Include="Views\EditLessonView.xaml.cs"/>
     <Compile Include="Views\EditPupilView.xaml.cs"/>

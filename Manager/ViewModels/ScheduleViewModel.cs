@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using Manager.Helper;
+using Manager.Model;
 
 namespace Manager.ViewModels
 {
@@ -54,9 +55,11 @@ namespace Manager.ViewModels
 
                 SetProperty(ref _weeksCount, val);
                 
-                RefreshFromStore(DateTime.Today);
+                RefreshCommand.Execute(null);
             }
         }
+
+        public StringFilter Filter { get; }
 
         #endregion
 
@@ -66,8 +69,6 @@ namespace Manager.ViewModels
         public ICommand MovePrevCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
 
-        public ICommand SaveCommand { get; set; }
-        public ICommand LoadCommand { get; set; }
         public ICommand AddPupil { get; set; }
 
         #endregion
@@ -90,12 +91,21 @@ namespace Manager.ViewModels
             RefreshFromStore(time);
         }
 
-        private void OnRefresh()
+        private void OnReset()
         {
             var time = DateTime.Now;
             var middle = Dates[Dates.Count / 2];
             if (!DateHelper.TheSameWeek(time, (DateTime)middle))
                 RefreshFromStore(DateTime.Now);
+        }
+
+        private void OnRefresh()
+        {
+            var time = Dates?.Any() == true
+                ? Dates[Dates.Count / 2].DateTime
+                : DateTime.Today;
+            
+            RefreshFromStore(time);
         }
 
         private void OnCreatePupil()
@@ -108,12 +118,15 @@ namespace Manager.ViewModels
 
         public ScheduleViewModel(int weekcount = 9)
         {
+            _weeksCount = weekcount;
+            
             MoveNextCommand = new DelegateCommand(OnMoveNext);
             MovePrevCommand = new DelegateCommand(OnMovePrev);
-            RefreshCommand = new DelegateCommand(OnRefresh);
+            RefreshCommand = new DelegateCommand(OnReset);
             AddPupil = new DelegateCommand(OnCreatePupil);
-
-            WeeksCount = weekcount;
+            
+            Filter = new StringFilter(new DelegateCommand(OnRefresh));
+            
             RefreshFromStore(DateTime.Today);
 
             Store.Store.Instance.StoreChanged += OnRefreshByStore;
@@ -130,13 +143,27 @@ namespace Manager.ViewModels
 
         private void RefreshFromStore(DateTime middle)
         {
-            Pupils = new ObservableCollection<PupilViewModel>(Store
-                                                              .Store
-                                                              .Instance
-                                                              .FindAll()
-                                                              .OrderBy(x => x.Name)
-                                                              .Select(x => new PupilViewModel(x)));
+            RefreshPupils();
+            
             RefreshSchedule(middle);
+        }
+
+        private void RefreshPupils()
+        {
+            IEnumerable<Pupil> all = Store.Store.Instance.FindAll();
+
+            // используем фильтр
+            if (Filter.IsEnabled)
+                all = all.Where(x => Filter.IsMatch(x.Name));
+
+            // сортируем по имени
+            var result = all
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            Pupils = new ObservableCollection<PupilViewModel>(
+                result.Select(x => new PupilViewModel(x)));
+
         }
 
         private void RefreshSchedule(DateTime middle)
