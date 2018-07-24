@@ -1,8 +1,8 @@
-﻿using Manager.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Manager.Helper;
+using Manager.Parsable;
 using WeakEvent;
 
 namespace Manager.Store
@@ -47,7 +47,11 @@ namespace Manager.Store
 
         #region Load
 
-        public void Load(IEnumerable<Pupil> pupils)
+        /// <summary>
+        /// Заполняем Store
+        /// </summary>
+        /// <param name="pupils"></param>
+        public void FillStore(IEnumerable<Pupil> pupils)
         {
             _pupils.Clear();
 
@@ -56,6 +60,10 @@ namespace Manager.Store
             RiseEvent(pupils.ToList());
         }
 
+        /// <summary>
+        /// Загружаем/заменяем ученика
+        /// </summary>
+        /// <param name="pupil"></param>
         public void Load(Pupil pupil)
         {
             if (pupil == null)
@@ -71,7 +79,7 @@ namespace Manager.Store
 
         public void RemovePupil(string name)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
                 return;
 
             var find = _pupils.FirstOrDefault(x => string.Equals(name, x.Name));
@@ -84,7 +92,7 @@ namespace Manager.Store
 
         public void ReplacePupil(string old, Pupil pupil)
         {
-            if (old == null || _pupils.Contains(pupil))
+            if (string.IsNullOrEmpty(old) || _pupils.Contains(pupil))
                 return;
 
             var find = _pupils.FirstOrDefault(x => string.Equals(old, x.Name));
@@ -130,8 +138,12 @@ namespace Manager.Store
 
         public void Replace(Lesson old, Lesson lesson)
         {
-            if (lesson == null || old == null || !string.Equals(old.Name, lesson.Name))
+            if (lesson == null
+                || old == null
+                || !string.Equals(old.Name, lesson.Name))
+            {
                 return;
+            }
 
             var find = _pupils.FirstOrDefault(x => string.Equals(old.Name, x.Name));
             if (find == null)
@@ -168,7 +180,7 @@ namespace Manager.Store
 
         public Pupil FindByName(string name)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
                 return null;
 
             var find = _pupils.FirstOrDefault(x => string.Equals(name, x.Name));

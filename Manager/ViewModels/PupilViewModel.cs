@@ -1,10 +1,11 @@
-﻿using Manager.Model;
-using Manager.ViewModels.Base;
+﻿using Manager.ViewModels.Base;
 using Mvvm.Commands;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Xml.Serialization;
+using Manager.Parsable;
 using MaterialDesignThemes.Wpf;
 
 namespace Manager.ViewModels
@@ -21,10 +22,28 @@ namespace Manager.ViewModels
 
         #region Properties
 
-        public string Name { get => _name; set => SetProperty(ref _name, value); }
-        public ObservableCollection<LessonViewModel> Lessons { get => _lessons; set => SetProperty(ref _lessons, value); }
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
 
-        public LessonViewModel SelectedLesson { get => _selectedLesson; set => SetProperty(ref _selectedLesson, value); }
+        public ObservableCollection<LessonViewModel> Lessons
+        {
+            get => _lessons;
+            set => SetProperty(ref _lessons, value);
+        }
+
+        public LessonViewModel SelectedLesson
+        {
+            get => _selectedLesson;
+            set => SetProperty(ref _selectedLesson, value);
+        }
+
+        // Смотрим на правильное значение
+        private string GetValidName => HasChanged && BenchMark != null
+            ? BenchMark.Name
+            : Name;
 
         #endregion
 
@@ -33,60 +52,92 @@ namespace Manager.ViewModels
         public ICommand AddEditLessonCommand { get; set; }
         public ICommand RemoveLessonCommand { get; set; }
         public ICommand DeletePupilCommand { get; set; }
-        public ICommand ChangePupilCommand { get; set; }
+        public ICommand AddChangePupilCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
 
         #endregion
 
         #region Command Handlers
 
+        /// <summary>
+        /// Удаляю модель из параметра, либо Selected
+        /// </summary>
+        /// <param name="vm"></param>
         private void OnRemoveLesson(LessonViewModel vm)
         {
-            var model = vm.ToModel();
+            // передали ли что удалять
+            var useParam = vm != null;
             
-            // сначала удаляем модель из параметра
-            if (model != null && Lessons.Any(x => x.TheSame(model)))
-            {
-                Store.Store.Instance.RemoveLesson(model);
-                return;
-            }
-            
-            if (SelectedLesson == null)
+            // получили модель
+            var model = useParam
+                ? vm?.ToModel()
+                : SelectedLesson?.ToModel();
+
+            // модель != null !!!
+            if (model == null)
                 return;
 
-            Store.Store.Instance.RemoveLesson(SelectedLesson.ToModel());
+            // Что мы удаляем из списка
+            var toRemove = useParam
+                ? Lessons.FirstOrDefault(x => x.TheSame(model))
+                : SelectedLesson;
+            
+            // Нечего удалять
+            if (toRemove == null)
+                return;
+            
+            // удаляем из списка и из store
+            Lessons.Remove(toRemove);
+            Store.Store.Instance.RemoveLesson(model);
         }
 
         private void OnAddEditLesson(object parameter)
         {
-            // Можем передать модель
-            if (parameter is LessonViewModel vm
-                && Lessons.Any(x => x.TheSame(vm.ToModel())))
+            // параметра нет
+            if (parameter == null)
             {
-                SelectedLesson = vm;
-                EditLesson();
-                return;
+                // если есть что-то в селекте, редактируем
+                if (SelectedLesson != null)
+                {
+                    EditLesson();
+                }
             }
+            else
+            {
+                // параметр - модель, её найдем и будем редактировать
+                if (parameter is LessonViewModel vm)
+                {
+                    // модель для поиска
+                    var model = vm.ToModel();
+                    // найденный элемент
+                    var find = Lessons.FirstOrDefault(x => x.TheSame(model));
+                    if (find == null)
+                        return;
 
-            // либо передаем дату
-            if (SelectedLesson == null && parameter is DateTime time)
-            {
-                AddLesson(time);
-                return;
+                    // ставим её в выделение
+                    SelectedLesson = find;
+                    EditLesson();
+                    return;
+                }
+
+                if (parameter is DateTime monday)
+                {
+                    AddLesson(Helper.DateHelper.GetMonday(monday));
+                }
             }
-            
-            // в иных случаях запускаем создание нового правила
-            EditLesson();
         }
 
         private async void EditLesson()
         {
             var old = SelectedLesson?.ToModel();
+            
+            if (old == null)
+                return;
 
             var newViewModel = new LessonViewModel(old);
-            
+
             var result = await DialogHost.Show(newViewModel, "LessonHost");
-            
+
             if (!true.Equals(result))
                 return;
 
@@ -104,15 +155,15 @@ namespace Manager.ViewModels
             var vm = new LessonViewModel(model);
 
             var result = await DialogHost.Show(vm, "LessonHost");
-            
+
             if (!true.Equals(result))
                 return;
 
             var lesson = vm.ToModel();
-            
+
             Lessons.Add(vm);
             Store.Store.Instance.AddLesson(lesson);
-            
+
             // создаем таск для партнера
             TryToCreatePartnerLesson(lesson);
         }
@@ -120,30 +171,34 @@ namespace Manager.ViewModels
         private void OnDeletePupil()
         {
             Clear();
-            Store.Store.Instance.RemovePupil(benchMark.Name);
+            Store.Store.Instance.RemovePupil(BenchMark.Name);
         }
 
-        private async void OnChangePupil()
+        private async void OnAddChangePupil()
         {
-            var old = ToModel();
-
+            var old = BenchMark ?? ToModel();
             var vm = new PupilViewModel(old);
 
             var result = await DialogHost.Show(vm, "PupilHost");
 
+            // диалог успешно завершен
             if (!true.Equals(result)
-                || !vm.hasChanged
-                || Equals(old, vm.ToModel()))
+                // мы что-то изменили
+                || !vm.HasChanged
+                // это не точная копия 
+                || !vm.TheSame(old))
+            {
                 return;
+            }
 
-            if (benchMark == null 
-                || Store.Store.Instance.FindByName(benchMark.Name) == null)
+            // создаём персонажа
+            if (Store.Store.Instance.FindByName(old.Name) == null)
             {
                 Store.Store.Instance.Load(vm.ToModel());
             }
             else
             {
-                Store.Store.Instance.ReplacePupil(benchMark.Name, vm.ToModel());
+                Store.Store.Instance.ReplacePupil(old.Name, vm.ToModel());
             }
         }
 
@@ -175,10 +230,11 @@ namespace Manager.ViewModels
             if (!lesson.IsMain || string.IsNullOrWhiteSpace(lesson?.Partner))
                 return;
 
+            // Создаем только партнеров, которые есть в Store, иначе он не добавится
             var find = Store.Store.Instance.FindByName(lesson.Partner);
             if (find == null)
                 return;
-            
+
             // навык не трогаем, нам не нужен
             var parnterLesson = new Lesson
             {
@@ -189,43 +245,54 @@ namespace Manager.ViewModels
                 // в данном случа патнер - основной выступающий
                 Partner = lesson.Name
             };
-            
+
             Store.Store.Instance.AddLesson(parnterLesson);
         }
-
+        
         #endregion
 
         public PupilViewModel(Pupil model = null) : base(model)
         {
             Store.Store.Instance.StoreChanged += OnStoreChanged;
 
-            RemoveLessonCommand = new DelegateCommand<LessonViewModel>(OnRemoveLesson, (lesson) => lesson != null || SelectedLesson != null);
+            RemoveLessonCommand = new DelegateCommand<LessonViewModel>(OnRemoveLesson,
+                (lesson) => lesson != null || SelectedLesson != null);
             AddEditLessonCommand = new DelegateCommand<object>(OnAddEditLesson);
             DeletePupilCommand = new DelegateCommand(OnDeletePupil);
-            ChangePupilCommand = new DelegateCommand(OnChangePupil);
+            AddChangePupilCommand = new DelegateCommand(OnAddChangePupil);
             RefreshCommand = new DelegateCommand(() => OnStoreChanged(null, EventArgs.Empty));
         }
 
         #region Implemented
+
         public override Pupil ToModel()
         {
-            return new Pupil
+            var model = new Pupil
             {
                 Name = Name,
                 Lessons = Lessons.Select(x => x.ToModel()).ToList()
             };
+            
+            model.Invalidate();
+
+            return model;
         }
 
         protected override void RefreshOverride(Pupil model)
         {
+            // сохраняем селект при обновлении
             var selected = SelectedLesson?.ToModel();
-            
+
             Name = model.Name;
             Lessons = new ObservableCollection<LessonViewModel>(model.Lessons.Select(x => new LessonViewModel(x)));
-            
+
+            // выставляем селект
             if (selected != null)
-                SelectedLesson = new LessonViewModel(selected);
+            {
+                SelectedLesson = Lessons.FirstOrDefault(x => x.TheSame(selected));
+            }
         }
+
         #endregion
     }
 }

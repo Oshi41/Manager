@@ -1,5 +1,4 @@
-﻿using System.IO.Ports;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Mvvm;
 using Mvvm.Commands;
 
@@ -42,8 +41,7 @@ namespace Manager.ViewModels
             var tempSearch = SearchString.ToLower();
             var tempName = text.ToLower();
 
-            return tempName.Contains(tempSearch) 
-                   || tempSearch.Contains(tempName);
+            return tempName.Contains(tempSearch);
         }
 
         public StringFilter(ICommand onSearchCommand)

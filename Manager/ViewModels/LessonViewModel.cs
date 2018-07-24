@@ -1,8 +1,8 @@
-﻿using Manager.Model;
-using Manager.ViewModels.Base;
+﻿using Manager.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Manager.Parsable;
 
 namespace Manager.ViewModels
 {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using Manager.Model;
+using Manager.Parsable;
 using Manager.ViewModels;
-using MaterialDesignThemes.Wpf;
 
 namespace Manager
 {

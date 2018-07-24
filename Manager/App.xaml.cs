@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO.Packaging;
-using System.Security;
+﻿using System.Security;
 using System.Windows;
-using System.Windows.Navigation;
 using Manager.Models;
 using Manager.ViewModels;
 using Manager.Windows;

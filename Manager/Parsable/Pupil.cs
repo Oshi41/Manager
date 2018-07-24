@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Manager.Model
+namespace Manager.Parsable
 {
     public class Pupil
     {
@@ -27,6 +27,15 @@ namespace Manager.Model
         public override int GetHashCode()
         {
             return Name?.GetHashCode() ?? 0;
+        }
+        
+        public void Invalidate()
+        {
+            // Пока что просто расставляем lessons то же имя
+            for (var i = Lessons.Count - 1; i >= 0; i--)
+            {
+                Lessons[i].Name = Name;
+            }
         }
     }
 }

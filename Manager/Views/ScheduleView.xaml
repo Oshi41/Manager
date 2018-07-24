@@ -249,7 +249,7 @@
                                                 VerticalAlignment="Center"
                                                 Width="16"
                                                 ToolTip="Редактировать запись ученика"
-                                                Command="{Binding Path=ChangePupilCommand}"
+                                                Command="{Binding Path=AddChangePupilCommand}"
                                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}">
                                             <Button.Content>
                                                 <Viewbox>

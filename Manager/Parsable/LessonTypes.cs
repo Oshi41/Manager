@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Manager.Model
+namespace Manager.Parsable
 {
     public enum LessonTypes
     {

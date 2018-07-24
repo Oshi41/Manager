@@ -8,7 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:Manager.Converters"
-             xmlns:model="clr-namespace:Manager.Model"
+             xmlns:model="clr-namespace:Manager.Parsable"
              mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="200"

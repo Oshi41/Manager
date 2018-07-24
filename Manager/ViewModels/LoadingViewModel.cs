@@ -1,19 +1,13 @@
-﻿using Manager.Model;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Mvvm;
 using Mvvm.Commands;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Security;
 using System.Windows.Input;
-using System.Security.Cryptography;
-using System.Text;
-using Manager.Behaviors;
 using Manager.Models;
+using Manager.Parsable;
 
 namespace Manager.ViewModels
 {
@@ -26,7 +20,7 @@ namespace Manager.ViewModels
         private SecureString _password;
         private bool _useEncr;
 
-        private CryptoModel _model = new CryptoModel();
+        private readonly CryptoModel _model = new CryptoModel();
         private EncryptionType _encryptionType;
 
         #endregion
@@ -51,7 +45,6 @@ namespace Manager.ViewModels
             set => SetProperty(ref _encryptionType, value);
         }
 
-
         public bool UseEncr
         {
             get => _useEncr;
@@ -64,7 +57,8 @@ namespace Manager.ViewModels
             set => SetProperty(ref _loadFromFile, value);
         }
 
-        public bool HasError { get; set; }
+        // Произошла ли ошибка при загрузке
+        public bool HasError { get; private set; }
 
         #endregion
 
@@ -141,7 +135,7 @@ namespace Manager.ViewModels
                     json = _model.Decrypt(type, json, Password);
 
                     var pupils = JsonConvert.DeserializeObject<List<Pupil>>(json);
-                    Store.Store.Instance.Load(pupils);
+                    Store.Store.Instance.FillStore(pupils);
                 }
             }
             catch

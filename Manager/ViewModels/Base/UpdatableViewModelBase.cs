@@ -1,14 +1,19 @@
 ﻿using Mvvm;
 using System.Runtime.CompilerServices;
+using MaterialDesignThemes.Wpf;
 
 namespace Manager.ViewModels.Base
 {
     public abstract class UpdatableViewModelBase<T> : BindableBase
         where T : class, new()
     {
-        protected T benchMark;
-        protected bool _isRefreshing;
-        protected bool hasChanged;
+        /// <summary>
+        /// Сохранённые значения после последнего обновления
+        /// </summary>
+        protected T BenchMark;
+        
+        protected bool IsRefreshing;
+        protected bool HasChanged;
 
         public UpdatableViewModelBase(T model = null)
         {
@@ -17,19 +22,20 @@ namespace Manager.ViewModels.Base
 
         public void Refresh(T model)
         {
-            // сохраняем оригинал
-            benchMark = model;
             // обнуляем признак изменений
-            hasChanged = false;
+            HasChanged = false;
 
             if (model == null)
                 return;
 
-            _isRefreshing = true;
+            IsRefreshing = true;
             
             RefreshOverride(model);
 
-            _isRefreshing = false;
+            IsRefreshing = false;
+            
+            // сохраняем копию модели
+            BenchMark = model;
         }
         public abstract T ToModel();
 
@@ -39,8 +45,11 @@ namespace Manager.ViewModels.Base
         {
             var result = base.SetProperty(ref storage, value, propertyName);
 
-            if (!_isRefreshing)
-                hasChanged = result;
+            // Если флажок опущен, не в режиме обновления и что-то изменили
+            if (!HasChanged && !IsRefreshing && result)
+            {
+                HasChanged = true;
+            }
 
             return result;
         }

@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using Manager.Helper;
-using Manager.Model;
+using Manager.Parsable;
 
 namespace Manager.ViewModels
 {
@@ -111,7 +109,7 @@ namespace Manager.ViewModels
         private void OnCreatePupil()
         {
             var vm = new PupilViewModel();
-            vm.ChangePupilCommand.Execute(null);
+            vm.AddChangePupilCommand.Execute(null);
         }
 
         #endregion
@@ -136,9 +134,7 @@ namespace Manager.ViewModels
 
         private void OnRefreshByStore(object sender, EventArgs e)
         {
-            var time = Dates[Dates.Count / 2];
-
-            RefreshFromStore((DateTime)time);
+            RefreshFromStore(FindMiddle());
         }
 
         private void RefreshFromStore(DateTime middle)
@@ -201,6 +197,16 @@ namespace Manager.ViewModels
             dates.Sort();
 
             Dates = new ObservableCollection<DateHeader>(dates.Select(x => new DateHeader(x)));
+        }
+
+        private DateTime FindMiddle()
+        {
+            if (Dates?.Any() == true)
+            {
+                return Dates[Dates.Count / 2].DateTime;
+            }
+
+            return DateTime.Today;
         }
 
         #endregion

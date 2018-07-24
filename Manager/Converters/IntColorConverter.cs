@@ -6,6 +6,10 @@ using System.Windows.Media;
 
 namespace Manager.Converters
 {
+    /// <summary>
+    /// Конвертируем числовые значения в цвет.
+    /// Используется для конвертации номер месяца => цвет  
+    /// </summary>
     public class IntColorConverter : IValueConverter
     {
         private static readonly List<SolidColorBrush> _colors = new List<SolidColorBrush>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 using System.Windows.Data;
 
 namespace Manager.Converters
@@ -15,8 +14,7 @@ namespace Manager.Converters
 
             var fieldInfo = value.GetType().GetField(value.ToString());
 
-            var attributes =
-                (DescriptionAttribute[]) fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var attributes = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
 
             return attributes?.Length > 0
                 ? attributes[0].Description

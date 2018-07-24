@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Manager.Model
+namespace Manager.Parsable
 {
     public class Lesson
     {
