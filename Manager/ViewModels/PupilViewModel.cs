@@ -186,7 +186,7 @@ namespace Manager.ViewModels
                 // мы что-то изменили
                 || !vm.HasChanged
                 // это не точная копия 
-                || !vm.TheSame(old))
+                || vm.TheSame(old))
             {
                 return;
             }

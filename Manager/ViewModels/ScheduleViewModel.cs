@@ -51,9 +51,8 @@ namespace Manager.ViewModels
                 if (val % 2 == 0)
                     val++;
 
-                SetProperty(ref _weeksCount, val);
-                
-                RefreshCommand.Execute(null);
+                if (SetProperty(ref _weeksCount, val))
+                    OnRefresh();
             }
         }
 
@@ -91,19 +90,13 @@ namespace Manager.ViewModels
 
         private void OnReset()
         {
-            var time = DateTime.Now;
-            var middle = Dates[Dates.Count / 2];
-            if (!DateHelper.TheSameWeek(time, (DateTime)middle))
+            if (!DateHelper.TheSameWeek(DateTime.Now, FindMiddle()))
                 RefreshFromStore(DateTime.Now);
         }
 
         private void OnRefresh()
         {
-            var time = Dates?.Any() == true
-                ? Dates[Dates.Count / 2].DateTime
-                : DateTime.Today;
-            
-            RefreshFromStore(time);
+            RefreshFromStore(FindMiddle());
         }
 
         private void OnCreatePupil()
